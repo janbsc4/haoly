@@ -643,8 +643,9 @@ export default function Conversation({
                     )}
                   </div>
                 )}
+                <div className="chat-reply-row">
+                <span className="chat-avatar" lang="zh-CN" aria-hidden="true">雷</span>
                 <article className="chat-reply" aria-label="Léi">
-                  <span className="chat-speaker">Léi</span>
                   {reply.kind === "explanation" ? (
                     <p className="chat-explanation" lang={locale}>{reply.explanation}</p>
                   ) : (
@@ -726,6 +727,7 @@ export default function Conversation({
                     </>
                   )}
                 </article>
+                </div>
               </div>
             ))}
             {pendingMessage !== null && (
@@ -744,9 +746,15 @@ export default function Conversation({
               </div>
             )}
             {busy && (
-              <p className="chat-pending" role="status">
-                {m.thinking}
-              </p>
+              <div className="chat-reply-row chat-pending" role="status">
+                <span className="chat-avatar" lang="zh-CN" aria-hidden="true">雷</span>
+                <p className="chat-reply chat-typing">
+                  <span className="sr-only">{m.thinking}</span>
+                  <span className="chat-loading-dots" aria-hidden="true">
+                    <span /><span /><span />
+                  </span>
+                </p>
+              </div>
             )}
             {error && (
               <p className="inline-alert" role="alert">
