@@ -83,19 +83,20 @@ const meta = messages.es.metadata;
             <a class="lp-text-link lang-en" href={conversationUrl("en")}>Chat with Léi <span aria-hidden="true">↗</span></a>
           </div>
           <p class="lp-reassurance"><span aria-hidden="true">✓</span> <span class="lang-es">Sin suscripción. Sin tarjeta. Progreso guardado aquí.</span><span class="lang-en">No subscription. No credit card. Progress saved here.</span></p>
-          <div class="lp-hero-footnote"><span class="lp-hanzi" lang="zh-Hans" aria-hidden="true">学</span><p><span class="lang-es">Que crezca tu chino.<br />No tu racha.</span><span class="lang-en">Grow your Chinese.<br />Not your streak.</span></p></div>
         </div>
         <div class="lp-preview-stage">
+          <div class="lp-preview-grid" aria-hidden="true"></div>
           <div class="lp-preview">
             <div class="lp-preview-header"><span class="lp-preview-brand">Yuwenke</span><span class="lp-preview-status"><span class="lp-dot" aria-hidden="true"></span><span class="lang-es">Ejemplo interactivo</span><span class="lang-en">Interactive preview</span></span></div>
             <div class="lp-preview-tabs" aria-hidden="true"><span class="is-active"><span class="lang-es">Estudiar</span><span class="lang-en">Study</span></span><span><span class="lang-es">Dominadas</span><span class="lang-en">Mastered</span></span><span><span class="lang-es">Favoritas</span><span class="lang-en">Favorites</span></span></div>
-            <div class="lp-demo-meta"><span class="lang-es">Chino → Español</span><span class="lang-en">Chinese → English</span><span>{demoCard.id}</span></div>
+            <div class="lp-demo-meta"><span class="lang-es">{messages.es.directions.toHanzi}</span><span class="lang-en">{messages.en.directions.toHanzi}</span><span>{demoCard.id}</span></div>
             <article class="lp-demo-card">
               <p class="lp-demo-label"><span class="lang-es">{messages.es.card.promptEyebrow}</span><span class="lang-en">{messages.en.card.promptEyebrow}</span></p>
-              <p class="lp-demo-hanzi lp-hanzi" lang="zh-Hans">{demoCard.hanzi}</p>
-              <div class="lp-demo-placeholder" data-demo-placeholder><span class="lang-es">Piensa la respuesta.<br />Dila en voz alta. Comprueba.</span><span class="lang-en">Think it through.<br />Say it aloud. Then check.</span></div>
+              <p class="lp-demo-prompt"><span class="lang-es">{demoCard.espanol}</span><span class="lang-en">{demoCard.ingles}</span></p>
+              <div class="lp-demo-placeholder" data-demo-placeholder><span class="lp-demo-cell" aria-hidden="true"></span><p><span class="lang-es">Piensa el carácter. Dilo en voz alta.<br />Después, comprueba.</span><span class="lang-en">Picture the character. Say it aloud.<br />Then check.</span></p></div>
               <div class="lp-demo-answer" id="demo-answer" hidden aria-live="polite">
-                <p class="lp-demo-meaning"><span class="lang-es">{demoCard.espanol}</span><span class="lang-en">{demoCard.ingles}</span><span lang="zh-Latn">{demoCard.pinyin}</span></p>
+                <p class="lp-demo-cell lp-hanzi" lang="zh-Hans">{demoCard.hanzi}</p>
+                <p class="lp-demo-pinyin" lang="zh-Latn">{demoCard.pinyin}</p>
                 <p class="lp-demo-explanation"><span class="lang-es">{demoCard.explicacion}</span><span class="lang-en">{demoCard.explicacion_ingles}</span></p>
                 <div class="lp-demo-example"><p class="lp-hanzi" lang="zh-Hans">{demoCard.ejemplo_hanzi}</p><p lang="zh-Latn">{demoCard.ejemplo_pinyin}</p><p><span class="lang-es">{demoCard.ejemplo_espanol}</span><span class="lang-en">{demoCard.ejemplo_ingles}</span></p></div>
               </div>
@@ -179,7 +180,7 @@ const meta = messages.es.metadata;
         </div>
       </section>
 
-      <section class="lp-closing lp-shell" aria-labelledby="closing-title"><span class="lp-closing-mark lp-hanzi" lang="zh-Hans" aria-hidden="true">学</span><div><h2 id="closing-title"><span class="lang-es">El resto viene con la práctica.</span><span class="lang-en">The rest comes with practice.</span></h2></div><a class="lp-button lp-button-primary lang-es" href={appUrl("es")}>Abrir Yuwenke <span aria-hidden="true">→</span></a><a class="lp-button lp-button-primary lang-en" href={appUrl("en")}>Open Yuwenke <span aria-hidden="true">→</span></a></section>
+      <section class="lp-closing lp-shell" aria-labelledby="closing-title"><span class="lp-closing-mark lp-hanzi" lang="zh-Hans" aria-hidden="true">学</span><div><h2 id="closing-title"><span class="lang-es">El resto viene con la práctica.</span><span class="lang-en">The rest comes with practice.</span></h2><p class="lp-closing-note"><span class="lang-es">Que crezca tu chino. No tu racha.</span><span class="lang-en">Grow your Chinese. Not your streak.</span></p></div><a class="lp-button lp-button-primary lang-es" href={appUrl("es")}>Abrir Yuwenke <span aria-hidden="true">→</span></a><a class="lp-button lp-button-primary lang-en" href={appUrl("en")}>Open Yuwenke <span aria-hidden="true">→</span></a></section>
     </main>
     <footer class="lp-footer lp-shell"><a class="lp-brand" href={base}>Yuwenke <small lang="zh-Hans">语文课</small></a><p><span class="lang-es">Aprende palabras. Ten algo que decir.</span><span class="lang-en">Learn words. Have something to say.</span></p><a href="#main"><span class="lang-es">Volver arriba</span><span class="lang-en">Back to top</span> ↑</a></footer>
     <noscript><p class="lp-noscript"><span class="lang-es">Activa JavaScript para probar la carta. </span><span class="lang-en">Enable JavaScript to try the card. </span><a href={appUrl("es")}>Español</a> · <a href={appUrl("en")}>English</a></p></noscript>
