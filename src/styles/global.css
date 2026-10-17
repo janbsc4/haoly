@@ -1039,10 +1039,13 @@ kbd {
 
 .queue-loading {
   display: grid;
-  gap: 16px;
+  gap: 13px;
 }
 
+/* Sized like the session progress and the card's minimum height, so the card
+   lands where its placeholder stood. */
 .queue-loading .loading-progress {
+  height: 33px;
   margin-top: 0;
 }
 
@@ -1774,16 +1777,6 @@ html:has(dialog[open]) {
   font-size: 1.2rem;
 }
 
-.loading-shell {
-  display: grid;
-  gap: 20px;
-}
-
-.loading-shell p {
-  color: var(--muted);
-  text-align: center;
-}
-
 .skeleton {
   overflow: hidden;
   border-radius: 14px;
@@ -1799,11 +1792,6 @@ html:has(dialog[open]) {
   animation: shimmer 1.5s infinite;
 }
 
-.loading-brand {
-  width: 230px;
-  height: 52px;
-}
-
 .loading-progress {
   height: 54px;
   margin-top: 30px;
@@ -1811,18 +1799,62 @@ html:has(dialog[open]) {
 
 .loading-card {
   width: min(720px, 100%);
-  height: 430px;
+  height: 360px;
   margin: 0 auto;
   border-radius: 24px;
 }
 
+/* Placeholders match the box of the text they stand in for (body line-height
+   1.5), so nothing shifts when the loaded values replace them. */
+.count-skeleton {
+  display: inline-block;
+  width: 1.5ch;
+  height: 0.9em;
+  border-radius: 4px;
+  vertical-align: -0.1em;
+}
+
+.avatar-skeleton {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+}
+
+/* Each heading bar takes the font size of the text it replaces, so 1em is its
+   glyph height and 0.25em its half-leading. */
+.heading-title-skeleton {
+  width: 4.5em;
+  height: 1em;
+  margin: 0.25em 0;
+  border-radius: 0.25em;
+  font-size: 2rem;
+}
+
+.heading-text-skeleton {
+  width: min(21em, 80%);
+  height: 1em;
+  margin: calc(4px + 0.25em) 0 0.25em;
+  border-radius: 0.3em;
+  font-size: 0.95rem;
+}
+
 /* React swaps a skeleton for real content in one frame, so the content eases in
-   over where the skeleton stood. Opacity and transform only: the card is laid out
-   and interactive from its first frame. These elements mount when a loader hands
-   off, not on every card, because StudyCard is reused across the queue. */
-.app-shell > .site-header,
-.app-shell > .study-workspace {
+   over where the skeleton stood. Opacity and transform only: everything is laid
+   out and interactive from its first frame. These elements mount when loading
+   hands off, not on every card or view change, because they are reused after. */
+.count-value,
+.study-heading > h1,
+.study-heading > p,
+.account-area > .sync-label,
+.account-area > .account-menu-wrap {
   animation: fade-in 220ms ease-out both;
+}
+
+.view-tabs button {
+  transition:
+    background-color 200ms ease-out,
+    color 200ms ease-out,
+    box-shadow 200ms ease-out;
 }
 
 .session-panel > .session-progress,
@@ -2233,6 +2265,10 @@ html:has(dialog[open]) {
 .study-workspace[hidden] {
   display: none;
 }
+/* Grid keeps the placeholder margins from collapsing; h1 and p have none to lose. */
+.study-heading {
+  display: grid;
+}
 .study-heading h1 {
   margin: 0;
   font-size: 2rem;
@@ -2243,10 +2279,6 @@ html:has(dialog[open]) {
   margin: 4px 0 0;
   color: var(--muted);
   font-size: 0.95rem;
-}
-.loading-shell {
-  max-width: 960px;
-  margin: 40px auto;
 }
 
 @media (max-width: 1399px) {
@@ -2386,10 +2418,12 @@ html:has(dialog[open]) {
     max-width: 720px;
     margin-top: 24px;
   }
-  .study-heading h1 {
+  .study-heading h1,
+  .heading-title-skeleton {
     font-size: 1.5rem;
   }
-  .study-heading p {
+  .study-heading p,
+  .heading-text-skeleton {
     font-size: 0.875rem;
   }
   .study-layout {

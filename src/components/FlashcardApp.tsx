@@ -259,6 +259,9 @@ export default function FlashcardApp({
     : false;
   const ownerKey = user?.uid ?? "guest";
   const viewInitialized = initializedOwner === ownerKey;
+  // Until progress and the saved view load, the static shell renders with
+  // placeholders where counts, the view heading, the account and the card go.
+  const loaded = ready && viewInitialized;
   const desiredQueueContext = useMemo(
     () =>
       JSON.stringify([
@@ -546,6 +549,7 @@ export default function FlashcardApp({
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (!loaded) return;
       const target = event.target as HTMLElement | null;
       const inField =
         target instanceof Element &&
@@ -602,6 +606,7 @@ export default function FlashcardApp({
     current,
     filterSheetOpen,
     helpOpen,
+    loaded,
     loginOpen,
     openSearch,
     packToConfirm,
@@ -700,19 +705,8 @@ export default function FlashcardApp({
             : m.sync.local
     : m.sync.guest;
 
-  if (!ready || !viewInitialized) {
-    return (
-      <div className="app-shell loading-shell" aria-live="polite">
-        <div className="loading-brand skeleton" />
-        <div className="loading-progress skeleton" />
-        <div className="loading-card skeleton" />
-        <p>{m.session.loading}</p>
-      </div>
-    );
-  }
-
   return (
-    <div className={`app-shell${chatOpen ? " app-shell--chat" : ""}`}>
+    <div className={`app-shell${chatOpen ? " app-shell--chat" : ""}`} aria-busy={!loaded}>
       <header className="site-header">
         <a className="brand" href={homeUrl()} aria-label={m.brand.homeAria}>
           <img
@@ -728,105 +722,117 @@ export default function FlashcardApp({
           </span>
         </a>
 
-        <nav className="view-tabs" aria-label={m.viewsAria}>
+        <nav className="view-tabs" aria-label={m.viewsAria} inert={!loaded}>
           {(Object.keys(m.views) as StudyView[]).map((view) => (
             <button
               type="button"
               key={view}
-              className={!chatOpen && view === activeView ? "is-active" : ""}
-              aria-current={!chatOpen && view === activeView ? "page" : undefined}
+              className={loaded && !chatOpen && view === activeView ? "is-active" : ""}
+              aria-current={loaded && !chatOpen && view === activeView ? "page" : undefined}
               onClick={() => changeView(view)}
             >
               <AppIcon name={view} />
               <span>{m.views[view]}</span>
-              <span className="count-pill">{counts[view]}</span>
+              <span className="count-pill">
+                {loaded ? (
+                  <span key="count" className="count-value">{counts[view]}</span>
+                ) : (
+                  <span key="pending" className="count-skeleton skeleton" />
+                )}
+              </span>
             </button>
           ))}
-          <button type="button" className={chatOpen ? "is-active" : ""} aria-current={chatOpen ? "page" : undefined} onClick={() => setChatOpen(true)}>
+          <button type="button" className={loaded && chatOpen ? "is-active" : ""} aria-current={loaded && chatOpen ? "page" : undefined} onClick={() => setChatOpen(true)}>
             <AppIcon name="chat" />
             <span>{locale === "es" ? "Conversa" : "Converse"}</span>
           </button>
         </nav>
 
         <div className="header-tools">
-          <div className="account-area">
-            <span className={`sync-label sync-${syncState}`} role="status" title={syncLabel}>
-              <span className="sync-status-text">{syncLabel}</span>
-            </span>
-            {syncState === "error" && user ? (
-              <button className="text-button" type="button" onClick={() => void retry()}>
-                {m.sync.retry}
-              </button>
-            ) : null}
-            <div className="account-menu-wrap" ref={accountMenuRef}>
-              <button
-                type="button"
-                className={`avatar-button${user ? "" : " save-progress"}`}
-                aria-label={m.account.menuAria}
-                aria-haspopup="menu"
-                aria-expanded={accountOpen}
-                ref={accountButtonRef}
-                onClick={() => setAccountOpen((value) => !value)}
-              >
-                {user ? initials(user.displayName, user.email, m.account.initialsFallback) : <AppIcon name="account" />}
-              </button>
-              {accountOpen ? (
-                <div className="account-menu" role="menu" aria-label={m.account.yourAccount}>
-                  <strong>{user?.displayName || m.account.yourAccount}</strong>
-                  <span>{user ? user.email : m.sync.guest}</span>
-                  <button
-                    type="button"
-                    role="menuitem"
-                    aria-label={m.voice.trigger}
-                    aria-haspopup="dialog"
-                    onClick={() => {
-                      setAccountOpen(false);
-                      setVoiceOpen(true);
-                    }}
-                  >
-                    {m.voice.title}
-                  </button>
-                  <button
-                    type="button"
-                    role="menuitem"
-                    onClick={() => {
-                      setAccountOpen(false);
-                      openHelp();
-                    }}
-                  >
-                    {m.help.trigger}
-                  </button>
-                  {user ? (<>
-                    <button
-                      type="button"
-                      role="menuitem"
-                      onClick={() => {
-                        setAccountOpen(false);
-                        setResetConfirmOpen(true);
-                      }}
-                    >
-                      {m.account.resetStudy}
-                    </button>
-                    <button type="button" role="menuitem" onClick={() => void signOut()}>
-                      {m.account.signOut}
-                    </button>
-                  </>) : (
-                    <button
-                      type="button"
-                      role="menuitem"
-                      title={firebaseConfigured ? undefined : m.account.syncUnavailableTitle}
-                      onClick={() => {
-                        setAccountOpen(false);
-                        setLoginOpen(true);
-                      }}
-                    >
-                      {m.account.signIn}
-                    </button>
-                  )}
-                </div>
+          {loaded ? (
+            <div className="account-area">
+              <span className={`sync-label sync-${syncState}`} role="status" title={syncLabel}>
+                <span className="sync-status-text">{syncLabel}</span>
+              </span>
+              {syncState === "error" && user ? (
+                <button className="text-button" type="button" onClick={() => void retry()}>
+                  {m.sync.retry}
+                </button>
               ) : null}
+              <div className="account-menu-wrap" ref={accountMenuRef}>
+                <button
+                  type="button"
+                  className={`avatar-button${user ? "" : " save-progress"}`}
+                  aria-label={m.account.menuAria}
+                  aria-haspopup="menu"
+                  aria-expanded={accountOpen}
+                  ref={accountButtonRef}
+                  onClick={() => setAccountOpen((value) => !value)}
+                >
+                  {user ? initials(user.displayName, user.email, m.account.initialsFallback) : <AppIcon name="account" />}
+                </button>
+                {accountOpen ? (
+                  <div className="account-menu" role="menu" aria-label={m.account.yourAccount}>
+                    <strong>{user?.displayName || m.account.yourAccount}</strong>
+                    <span>{user ? user.email : m.sync.guest}</span>
+                    <button
+                      type="button"
+                      role="menuitem"
+                      aria-label={m.voice.trigger}
+                      aria-haspopup="dialog"
+                      onClick={() => {
+                        setAccountOpen(false);
+                        setVoiceOpen(true);
+                      }}
+                    >
+                      {m.voice.title}
+                    </button>
+                    <button
+                      type="button"
+                      role="menuitem"
+                      onClick={() => {
+                        setAccountOpen(false);
+                        openHelp();
+                      }}
+                    >
+                      {m.help.trigger}
+                    </button>
+                    {user ? (<>
+                      <button
+                        type="button"
+                        role="menuitem"
+                        onClick={() => {
+                          setAccountOpen(false);
+                          setResetConfirmOpen(true);
+                        }}
+                      >
+                        {m.account.resetStudy}
+                      </button>
+                      <button type="button" role="menuitem" onClick={() => void signOut()}>
+                        {m.account.signOut}
+                      </button>
+                    </>) : (
+                      <button
+                        type="button"
+                        role="menuitem"
+                        title={firebaseConfigured ? undefined : m.account.syncUnavailableTitle}
+                        onClick={() => {
+                          setAccountOpen(false);
+                          setLoginOpen(true);
+                        }}
+                      >
+                        {m.account.signIn}
+                      </button>
+                    )}
+                  </div>
+                ) : null}
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="account-area">
+              <span className="avatar-skeleton skeleton" />
+            </div>
+          )}
           {SUPPORTED_LOCALES.length > 1 ? (
             <div
               className="locale-switcher"
@@ -865,7 +871,7 @@ export default function FlashcardApp({
         </div>
       ) : null}
 
-      {chatOpen && <Suspense fallback={<p role="status">{locale === "es" ? "Cargando…" : "Loading…"}</p>}>
+      {loaded && chatOpen && <Suspense fallback={<p role="status">{locale === "es" ? "Cargando…" : "Loading…"}</p>}>
         <Conversation
           key={`${user?.uid ?? "guest"}:${locale}`}
           cards={cards}
@@ -885,12 +891,21 @@ export default function FlashcardApp({
           }}
         />
       </Suspense>}
-      <div className="study-workspace" hidden={chatOpen}>
+      <div className="study-workspace" hidden={loaded && chatOpen}>
       <div className="study-heading">
-        <h1>{m.views[activeView]}</h1>
-        <p>{m.viewDescriptions[activeView]}</p>
+        {loaded ? (
+          <>
+            <h1>{m.views[activeView]}</h1>
+            <p>{m.viewDescriptions[activeView]}</p>
+          </>
+        ) : (
+          <>
+            <div className="heading-title-skeleton skeleton" />
+            <div className="heading-text-skeleton skeleton" />
+          </>
+        )}
       </div>
-      <div className="study-controls">
+      <div className="study-controls" inert={!loaded}>
         <div className="study-toolbar">
           <PacksButton
             open={packsOpen}
@@ -953,11 +968,11 @@ export default function FlashcardApp({
 
       <main className="study-layout">
         <section className="session-panel" aria-label={m.session.panelAria(m.views[activeView])}>
-          {!queueReady ? (
+          {!loaded || !queueReady ? (
             <div className="queue-loading" aria-live="polite">
               <div className="loading-progress skeleton" />
               <div className="loading-card skeleton" />
-              <p>{m.session.queueLoading}</p>
+              <p>{loaded ? m.session.queueLoading : m.session.loading}</p>
             </div>
           ) : current && !completed ? (
             <>

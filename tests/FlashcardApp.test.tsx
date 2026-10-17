@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { renderToString } from "react-dom/server";
 
 import FlashcardApp from "../src/components/FlashcardApp";
 import { unitKey } from "../src/lib/study";
@@ -98,6 +99,30 @@ function savedProgress(
 }
 
 describe("FlashcardApp", () => {
+  it("serves the known shell with placeholders for what loads with progress", () => {
+    const page = document.createElement("div");
+    page.innerHTML = renderToString(
+      <FlashcardApp cards={[card, secondCard]} packs={packs} packIdByCardId={packIdByCardId} />,
+    );
+    document.body.append(page);
+    const view = within(page);
+
+    const tabs = view.getByRole("navigation", { name: "Modos de estudio" });
+    expect(tabs).toHaveAttribute("inert");
+    expect(within(tabs).getByRole("button", { name: "Estudiar" })).not.toHaveClass("is-active");
+    expect(page.querySelectorAll(".count-skeleton")).toHaveLength(3);
+    expect(page.querySelector(".avatar-skeleton")).not.toBeNull();
+    expect(view.queryByRole("heading", { level: 1 })).toBeNull();
+
+    const controls = page.querySelector(".study-controls");
+    expect(controls).toHaveAttribute("inert");
+    for (const name of ["Packs", "Buscar", "Filtros"]) {
+      expect(within(controls as HTMLElement).getByRole("button", { name: new RegExp(name) })).toBeInTheDocument();
+    }
+    expect(view.getByText("Preparando tus cartas…")).toBeInTheDocument();
+    page.remove();
+  });
+
   it("opens Léi from the landing link and clears the fragment when returning to cards", async () => {
     window.history.replaceState(null, "", "/yuwenke/app/es/#conversation");
     try {
