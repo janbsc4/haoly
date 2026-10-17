@@ -141,7 +141,7 @@ it("gives a guest three messages before asking for sign-in", async () => {
 it("starts a conversation, reveals assistance without more inference, and saves the reply", async () => {
   render(<Conversation {...props} />);
   await userEvent.click(screen.getByLabelText("Conversation settings"));
-  expect(screen.queryByText("GLM-5.3-Flash")).not.toBeInTheDocument();
+  expect(screen.queryByText("GPT-6 Luna")).not.toBeInTheDocument();
   await userEvent.click(
     screen.getByRole("button", { name: "Start a conversation" }),
   );
@@ -460,7 +460,7 @@ it("keeps supporting controls in settings and dismisses them with Escape or an o
   await userEvent.click(settings);
   expect(privacy).toBeVisible();
   expect(screen.queryByText("Model:")).not.toBeInTheDocument();
-  expect(screen.queryByText("GLM-5.3-Flash")).not.toBeInTheDocument();
+  expect(screen.queryByText("GPT-6 Luna")).not.toBeInTheDocument();
   fireEvent.keyDown(settings, { key: "Escape" });
   expect(privacy).not.toBeVisible();
   expect(settings).toHaveFocus();

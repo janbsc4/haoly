@@ -2,7 +2,7 @@
 
 The Converse tab uses each learner's current local progress, including guest progress and signed-in changes waiting to sync. Learning words and words recognized but not yet produced become practice targets. Known words provide support, and concept cards provide grammar guidance. Unseen cards are not assumed known.
 
-Léi replies in short Chinese sentences. Revealing pinyin places each syllable below its Chinese character, including in saved conversations. The app shows a translation, a possible answer, and brief corrections in the selected English or Spanish interface language. If the model returns a naturalness explanation entirely in Chinese, the app shows a localized summary while keeping any suggested Chinese sentence. The recap links practiced words back to their cards without changing their learning status. The default model is GLM-5.3-Flash; the displayed model label follows the backend reply or saved conversation.
+Léi replies in short Chinese sentences. Revealing pinyin places each syllable below its Chinese character, including in saved conversations. The app shows a translation, a possible answer, and brief corrections in the selected English or Spanish interface language. If the model returns a naturalness explanation entirely in Chinese, the app shows a localized summary while keeping any suggested Chinese sentence. The recap links practiced words back to their cards without changing their learning status. The default model is GPT-6 Luna (`openai/gpt-6-luna`) via OpenRouter; the displayed model label follows the backend reply or saved conversation.
 
 Questions about vocabulary, grammar, pronunciation, corrections, or study cards use an explanation reply. Léi chooses from the latest message's intent, including mixed Chinese and English or Spanish questions. The explanation appears directly in the selected interface language, with Chinese or pinyin only as examples. It has no practice question, naturalness grade, audio, or translation reveal. Returning to the practice scenario resumes normal Chinese replies, without another inference call to classify intent. New clients advertise support for explanations; cached older clients keep the conversation format they understand. The selected vocabulary is only a subset of the learner's cards, so Léi must acknowledge uncertainty when it cannot confirm card coverage.
 
@@ -10,7 +10,7 @@ Léi returns a glossary for Mandarin quoted in English or Spanish explanatory pr
 
 Each new Mandarin attempt can receive a clickable naturalness indicator below the learner's message: Natural, Mostly natural, or Needs work. Expanding it shows Léi's explanation and a suggested sentence when improvement is needed. This assessment is generated with the normal reply, not an extra inference request. Start/help requests and older history without an assessment remain ungraded. These are AI suggestions, not proficiency scores. Reply audio uses the app's existing Chinese voice and mute settings.
 
-The browser saves the latest twelve exchanges separately for guests or each account and interface language. A new conversation asks before deleting history. The backend sends bounded conversation history and selected vocabulary to OpenCode, without account names or email addresses. It does not store transcripts.
+The browser saves the latest twelve exchanges separately for guests or each account and interface language. A new conversation asks before deleting history. The backend sends bounded conversation history and selected vocabulary to OpenRouter, without account names or email addresses. It does not store transcripts.
 
 ## Hosting and authentication
 
@@ -39,7 +39,7 @@ The Google public-key cache is managed by `jose`. Like Firebase's default token 
 
    ```sh
    npm run deploy:chat
-   npx wrangler secret put OPENCODE_API_KEY --config worker/wrangler.jsonc
+   npx wrangler secret put OPENROUTER_API_KEY --config worker/wrangler.jsonc
    ```
 
    Never put the key in browser configuration, repository variables, source, or command-line arguments. The private `.env/` folder is ignored and is not read by the browser or uploaded with the Worker.
@@ -59,7 +59,7 @@ The Google public-key cache is managed by `jose`. Like Firebase's default token 
 
 ## Local development
 
-Run `npm run dev:chat -- --var ALLOWED_ORIGIN:http://localhost:4321`. Wrangler uses local Durable Object storage by default. Put `OPENCODE_API_KEY` in the ignored `worker/.dev.vars` file for local inference. Guests can try three messages locally, while signed-in requests still verify real Firebase identities.
+Run `npm run dev:chat -- --var ALLOWED_ORIGIN:http://localhost:4321`. Wrangler uses local Durable Object storage by default. Put `OPENROUTER_API_KEY` in the ignored `worker/.dev.vars` file for local inference. Guests can try three messages locally, while signed-in requests still verify real Firebase identities.
 
 Put the public Firebase configuration, `PUBLIC_CHAT_ENABLED=true`, and `PUBLIC_CHAT_API_URL=http://localhost:8787/conversation` in the root `.env.local`. This file can coexist with the private `.env/` directory. Restart the Astro server after changing public environment values.
 
@@ -67,14 +67,14 @@ Put the public Firebase configuration, `PUBLIC_CHAT_ENABLED=true`, and `PUBLIC_C
 
 Default limits are three guest attempts per browser ID in total, at most 30 guest attempts per network per UTC day, 30 attempts per signed-in user per UTC day, six per calendar minute, 300 globally per UTC day, and 3,000 globally per UTC month. Failed provider requests still consume an attempt because they may have incurred inference usage. There are no automatic inference retries. Guests and accounts share the global allowance.
 
-Requests have a 128 KiB body limit, bounded message history, and a server-selected vocabulary context. Provider output is limited to 4,096 tokens and a 60-second timeout, with a 70-second browser timeout. GLM-5.3 models use low reasoning effort so their required thinking leaves room for the structured reply. Timeouts show a specific retry message. Invalid provider output and unavailable service leave the learner's draft intact. Guest and offline flashcard study remain available.
+Requests have a 128 KiB body limit, bounded message history, and a server-selected vocabulary context. Provider output is limited to 4,096 tokens and a 60-second timeout, with a 70-second browser timeout. Requests use low reasoning effort so thinking leaves room for the structured reply. Timeouts show a specific retry message. Invalid provider output and unavailable service leave the learner's draft intact. Guest and offline flashcard study remain available.
 
 Set `CHAT_ENABLED` to `"false"` in the Worker configuration and redeploy to stop inference, including requests from old browser bundles. `PUBLIC_CHAT_ENABLED=false` hides access in newly built clients but does not disable the backend.
 
-These limits constrain requests, not money. Léi uses `glm-5.3-flash-free` on the OpenCode Console endpoint with a Console API key. OpenCode offers it free for a limited time, and its provider follows a zero-retention policy without training on requests. When the free period ends, requests fail until `CHAT_MODEL` changes to a paid model such as `glm-5.3-flash` and the Console account has credits. The client identifies itself honestly as `Haoly-Language-Practice/1.0` and sends a stable, opaque conversation UUID.
+These limits constrain requests, not money. Léi uses `openai/gpt-6-luna` through OpenRouter with an OpenRouter API key, billed per token against the account's credits; set a credit limit on the key in the OpenRouter dashboard. Requests set `provider.data_collection: "deny"` so OpenRouter only routes to providers that do not retain or train on prompts. Change `CHAT_MODEL` in `worker/wrangler.jsonc` to switch models. The client identifies itself honestly as `Haoly-Language-Practice/1.0` with OpenRouter attribution headers for haoly.app and sends no learner identifiers.
 
 ## Implementation and verification
 
-`shared/chat.ts` defines the request and response contract. `worker/src/tutor.ts` selects vocabulary and calls GLM-5.3-Flash. `worker/src/auth.ts` verifies Firebase identities. `worker/src/index.ts` handles requests and reserves usage counters using `quota.ts`. `src/lib/chatClient.ts` sends either the signed-in user's ID token or a guest browser ID to the Worker.
+`shared/chat.ts` defines the request and response contract. `worker/src/tutor.ts` selects vocabulary and calls the model through OpenRouter. `worker/src/auth.ts` verifies Firebase identities. `worker/src/index.ts` handles requests and reserves usage counters using `quota.ts`. `src/lib/chatClient.ts` sends either the signed-in user's ID token or a guest browser ID to the Worker.
 
 Tests cover signed JWT validation, unauthorized requests, provider errors, vocabulary selection, account-separated history, model labels, and draft preservation. Miniflare runs the compiled Worker and SQLite Durable Object to test concurrent reservations against real local storage. Existing Firestore rules and progress-sync tests continue to protect learner data.

@@ -52,7 +52,7 @@ beforeEach(() => {
         ALLOWED_ORIGIN: "https://haoly.app",
         CHAT_ENABLED: "true",
         CHAT_MODEL: "mimo-v2.6-flash",
-        OPENCODE_API_KEY: "test-key",
+        OPENROUTER_API_KEY: "test-key",
       },
       outboundService: async (request) => {
         if (
@@ -62,7 +62,7 @@ beforeEach(() => {
           return Response.json({ keys: [jwk] });
         }
         expect(request.url).toBe(
-          "https://opencode.ai/inference/openai/v1/chat/completions",
+          "https://openrouter.ai/api/v1/chat/completions",
         );
         expect(request.headers.get("User-Agent")).toBe(
           "Haoly-Language-Practice/1.0",

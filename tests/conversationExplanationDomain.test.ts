@@ -97,10 +97,11 @@ it("restores explanations and includes them when the learner resumes Chinese pra
   ]);
 });
 
-it("keeps the Worker and initial model label on GLM-5.3-Flash while retaining saved model labels", () => {
+it("labels the default GPT-6 Luna model while retaining saved model labels", () => {
   const configuration = readFileSync("worker/wrangler.jsonc", "utf8");
   const configuredModel = configuration.match(/"CHAT_MODEL":\s*"([^"]+)"/)?.[1];
   expect(configuredModel).toBe(DEFAULT_CHAT_MODEL);
-  expect(chatModelLabel(DEFAULT_CHAT_MODEL)).toBe("GLM-5.3-Flash");
+  expect(chatModelLabel(DEFAULT_CHAT_MODEL)).toBe("GPT-6 Luna");
+  expect(chatModelLabel("glm-5.3-flash-free")).toBe("GLM-5.3-Flash");
   expect(chatModelLabel("mimo-v2.6-flash")).toBe("MiMo-V2.6-Flash");
 });

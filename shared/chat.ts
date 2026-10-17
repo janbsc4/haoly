@@ -3,9 +3,10 @@ import { z } from "zod";
 export const CHAT_MAX_MESSAGE = 1500;
 export const CHAT_MAX_HISTORY = 24;
 export const CHAT_MAX_HISTORY_CHARS = 12000;
-export const DEFAULT_CHAT_MODEL = "glm-5.3-flash-free";
+export const DEFAULT_CHAT_MODEL = "openai/gpt-6-luna";
 
 export function chatModelLabel(model: string): string {
+  if (model === "openai/gpt-6-luna") return "GPT-6 Luna";
   if (model === "glm-5.3-flash" || model === "glm-5.3-flash-free") return "GLM-5.3-Flash";
   if (model === "mimo-v2.6-flash") return "MiMo-V2.6-Flash";
   return model;

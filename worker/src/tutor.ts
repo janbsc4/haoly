@@ -181,28 +181,26 @@ export async function generateTutorReply(
   const { context, messages } = tutorMessages(request, cards);
   try {
     const response = await options.fetch(
-      "https://opencode.ai/inference/openai/v1/chat/completions",
+      "https://openrouter.ai/api/v1/chat/completions",
       {
         method: "POST",
         headers: {
           Authorization: `Bearer ${options.apiKey}`,
           "Content-Type": "application/json",
           "User-Agent": "Haoly-Language-Practice/1.0",
-          "x-opencode-session": request.sessionId,
+          // OpenRouter app attribution; no learner identifiers leave the Worker.
+          "HTTP-Referer": "https://haoly.app",
+          "X-Title": "Haoly",
         },
         body: JSON.stringify({
           model: options.model,
           messages,
           max_tokens: 4096,
-          // GLM-5.3 requires thinking; keep it light enough for short practice turns.
-          ...(["glm-5.3", "glm-5.3-flash", "glm-5.3-flash-free"].includes(options.model)
-            ? { reasoning_effort: "low" }
-            : {}),
+          // Light reasoning leaves room for the structured reply in short practice turns.
+          reasoning: { effort: "low" },
           response_format: { type: "json_object" },
-          // These GLM models default to reasoning, which can consume the short reply budget.
-          ...(["glm-5.1", "glm-5.2"].includes(options.model)
-            ? { thinking: { type: "disabled" } }
-            : {}),
+          // Only route to providers that do not retain or train on prompts.
+          provider: { data_collection: "deny" },
         }),
         signal: AbortSignal.timeout(60000),
       },

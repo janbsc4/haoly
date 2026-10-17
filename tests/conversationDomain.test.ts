@@ -173,7 +173,7 @@ describe("inference responses", () => {
     })).rejects.toMatchObject({ code: "unavailable" });
   });
 
-  it("calls OpenCode and filters hallucinated or unstudied recap IDs", async () => {
+  it("calls OpenRouter and filters hallucinated or unstudied recap IDs", async () => {
     const fetchMock = vi.fn<typeof fetch>().mockResolvedValue(
       new Response(
         JSON.stringify({
@@ -204,19 +204,24 @@ describe("inference responses", () => {
     expect(result.reply.practicedCardIds).toEqual([word.id]);
     expect(result.targetCardIds).toEqual([word.id]);
     expect(fetchMock.mock.calls[0][0]).toBe(
-      "https://opencode.ai/inference/openai/v1/chat/completions",
+      "https://openrouter.ai/api/v1/chat/completions",
     );
     expect(fetchMock.mock.calls[0][1]?.headers).toMatchObject({
       Authorization: "Bearer test-secret",
       "User-Agent": "Haoly-Language-Practice/1.0",
-      "x-opencode-session": request.sessionId,
+      "HTTP-Referer": "https://haoly.app",
+      "X-Title": "Haoly",
     });
     expect(
       JSON.parse(fetchMock.mock.calls[0][1]?.body as string),
-    ).toMatchObject({ thinking: { type: "disabled" }, max_tokens: 4096 });
+    ).toMatchObject({
+      reasoning: { effort: "low" },
+      provider: { data_collection: "deny" },
+      max_tokens: 4096,
+    });
   });
 
-  it("reports GLM-5.3-Flash as selected without trying to disable its required thinking", async () => {
+  it("reports GPT-6 Luna as selected with low reasoning effort through OpenRouter", async () => {
     const fetchMock = vi.fn<typeof fetch>().mockResolvedValue(
       new Response(
         JSON.stringify({
@@ -231,45 +236,12 @@ describe("inference responses", () => {
     );
     const result = await generateTutorReply(request, cards, {
       apiKey: "test-secret",
-      model: "glm-5.3-flash",
+      model: "openai/gpt-6-luna",
       fetch: fetchMock,
     });
     const body = JSON.parse(fetchMock.mock.calls[0][1]?.body as string);
-    expect(body).toMatchObject({ model: "glm-5.3-flash", reasoning_effort: "low", max_tokens: 4096 });
-    expect(body).not.toHaveProperty("thinking");
-    expect(result.model).toBe("glm-5.3-flash");
-  });
-
-  it("keeps low reasoning effort on the free GLM-5.3-Flash tier", async () => {
-    const fetchMock = vi.fn<typeof fetch>().mockRejectedValue(new Error("offline"));
-    await generateTutorReply(request, cards, { apiKey: "test-secret", model: "glm-5.3-flash-free", fetch: fetchMock }).catch(() => {});
-    const body = JSON.parse(fetchMock.mock.calls[0][1]?.body as string);
-    expect(body).toMatchObject({ model: "glm-5.3-flash-free", reasoning_effort: "low" });
-  });
-
-  it("uses MiMo-V2.6-Flash without GLM-specific inference settings", async () => {
-    const fetchMock = vi.fn<typeof fetch>().mockResolvedValue(
-      new Response(
-        JSON.stringify({
-          choices: [
-            {
-              message: { content: JSON.stringify(reply) },
-              finish_reason: "stop",
-            },
-          ],
-        }),
-      ),
-    );
-    const result = await generateTutorReply(request, cards, {
-      apiKey: "test-secret",
-      model: "mimo-v2.6-flash",
-      fetch: fetchMock,
-    });
-    const body = JSON.parse(fetchMock.mock.calls[0][1]?.body as string);
-    expect(body).toMatchObject({ model: "mimo-v2.6-flash", max_tokens: 4096 });
-    expect(body).not.toHaveProperty("thinking");
-    expect(body).not.toHaveProperty("reasoning_effort");
-    expect(result.model).toBe("mimo-v2.6-flash");
+    expect(body).toMatchObject({ model: "openai/gpt-6-luna", reasoning: { effort: "low" }, max_tokens: 4096 });
+    expect(result.model).toBe("openai/gpt-6-luna");
   });
 
   it.each([

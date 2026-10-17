@@ -13,7 +13,7 @@ import { ChatError, generateTutorReply, parseChatRequest } from "./tutor";
 export interface Env {
   FIREBASE_PROJECT_ID: string;
   ALLOWED_ORIGIN: string;
-  OPENCODE_API_KEY: string;
+  OPENROUTER_API_KEY: string;
   CHAT_MODEL: string;
   CHAT_ENABLED: string;
   CHAT_USER_DAILY_LIMIT: string;
@@ -180,7 +180,7 @@ export default {
         },
       });
     if (request.method !== "POST") return error(405, "invalid-argument");
-    if (env.CHAT_ENABLED !== "true" || !env.OPENCODE_API_KEY)
+    if (env.CHAT_ENABLED !== "true" || !env.OPENROUTER_API_KEY)
       return error(503, "unavailable");
     const token = request.headers
       .get("Authorization")
@@ -205,7 +205,7 @@ export default {
         (new URL(request.url).hostname === "localhost" ? "127.0.0.1" : null);
       if (!ip || ip.length > 64) return error(503, "unavailable");
       uid = guestId ?? "";
-      ipKey = await guestIpKey(ip, env.OPENCODE_API_KEY);
+      ipKey = await guestIpKey(ip, env.OPENROUTER_API_KEY);
     }
     let data;
     try {
@@ -237,7 +237,7 @@ export default {
         return error(503, "unavailable");
       allowanceRemaining = allowance.remaining;
       const result = await generateTutorReply(data, cards, {
-        apiKey: env.OPENCODE_API_KEY,
+        apiKey: env.OPENROUTER_API_KEY,
         model: env.CHAT_MODEL || DEFAULT_CHAT_MODEL,
         fetch: (input, init) => fetch(input, init),
       });
