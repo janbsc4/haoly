@@ -175,6 +175,13 @@ const defaultDependencies: ProgressSyncDependencies = {
   loadFirebaseClient: loadDefaultFirebaseClient,
 };
 
+/**
+ * Upper bound for the first Firebase auth resolution before the study session
+ * may start as a guest. Firebase resolves auth from IndexedDB persistence
+ * without network access, so this only trips on genuinely wedged loads.
+ */
+const AUTH_RESOLUTION_WATCHDOG_MS = 5000;
+
 export function useProgressSync(
   {
     cards,
@@ -189,7 +196,8 @@ export function useProgressSync(
   const [progress, setProgress] = useState<ProgressMap>({});
   const [favorites, setFavorites] = useState<FavoriteMap>({});
   const [packState, setPackState] = useState<CardPackState | null>(null);
-  const [ready, setReady] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
+  const [authResolved, setAuthResolved] = useState(!firebaseConfigured);
   const [storageAvailable, setStorageAvailable] = useState(true);
   const [user, setUser] = useState<User | null>(null);
   const [syncState, setSyncState] = useState<SyncState>("local");
@@ -442,13 +450,20 @@ export function useProgressSync(
     setStorageAvailable(
       guestProgress.available && guestFavorites.available && storedGuestPacks.available,
     );
-    setReady(true);
+    setHydrated(true);
     /* eslint-enable react-hooks/set-state-in-effect */
 
     if (!firebaseConfigured) return undefined;
 
     let cancelled = false;
     let unsubscribeAuth: () => void = () => undefined;
+    // A wedged Firebase bundle (rare partial cache miss during the dynamic
+    // import) must never trap the learner on the loading shell forever. After
+    // a grace period the app proceeds as a guest, and a late auth resolution
+    // takes over through the normal account-switch flows.
+    const authWatchdog = window.setTimeout(() => {
+      if (!cancelled) setAuthResolved(true);
+    }, AUTH_RESOLUTION_WATCHDOG_MS);
     void loadFirebaseClientRef.current()
       .then((firebase) => {
         if (cancelled) return;
@@ -468,6 +483,10 @@ export function useProgressSync(
             unsubscribeCardPacksRef.current = null;
             userRef.current = nextUser;
             setUser(nextUser);
+            // The first callback — user or null — is the app's authoritative
+            // signal that guest/account state can be trusted for the first
+            // queue build.
+            setAuthResolved(true);
 
             if (!nextUser) {
               const nextGuestProgress = localProgress.readGuest();
@@ -734,6 +753,7 @@ export function useProgressSync(
             void flushOutboxes(nextUser.uid, generation);
           },
           () => {
+            setAuthResolved(true);
             setSyncState("error");
             setNotice("syncStartFailed");
           },
@@ -741,6 +761,7 @@ export function useProgressSync(
       })
       .catch(() => {
         if (!cancelled) {
+          setAuthResolved(true);
           setSyncState("error");
           setNotice("syncPrepareFailed");
         }
@@ -756,6 +777,7 @@ export function useProgressSync(
 
     return () => {
       cancelled = true;
+      window.clearTimeout(authWatchdog);
       generationRef.current += 1;
       unsubscribeProgressRef.current?.();
       unsubscribeFavoritesRef.current?.();
@@ -1013,7 +1035,12 @@ export function useProgressSync(
     progress,
     favorites,
     openPackIds: packState?.openPackIds ?? orderedPackIds.slice(0, 1),
-    ready,
+    // Ready means the study state now belongs to its final owner: local
+    // storage is hydrated and Firebase auth has resolved to a user or null.
+    // Building the queue before auth resolves would shuffle a guest session
+    // that cloud sync immediately replaces, flashing and swapping the first
+    // flashcard visible to the learner.
+    ready: hydrated && authResolved,
     storageAvailable,
     user,
     syncState,

@@ -468,3 +468,57 @@ it("keeps post-reset decisions made while a pack transaction is still pending", 
   });
   expect(result.current.progress["FC001::hanzi-meaning"]).toBeUndefined();
 });
+
+describe("initial session readiness", () => {
+  it("keeps the loading state until Firebase resolves who signed in", async () => {
+    let resolveAuth: Parameters<ProgressSyncFirebaseClient["observeAuth"]>[0] = () => undefined;
+    const { client } = firebaseAdapter({
+      observeAuth: vi.fn((onUser) => {
+        resolveAuth = onUser;
+        return () => undefined;
+      }),
+    });
+    const { result } = renderAuthenticatedSync(client);
+    await waitFor(() => expect(client.observeAuth).toHaveBeenCalled());
+    expect(result.current.ready).toBe(false);
+
+    resolveAuth(user);
+
+    await waitFor(() => expect(result.current.ready).toBe(true));
+    expect(result.current.user).toEqual(user);
+  });
+
+  it("lets the guest session start as soon as Firebase resolves null auth", async () => {
+    let resolveAuth: Parameters<ProgressSyncFirebaseClient["observeAuth"]>[0] = () => undefined;
+    const { client } = firebaseAdapter({
+      observeAuth: vi.fn((onUser) => {
+        resolveAuth = onUser;
+        return () => undefined;
+      }),
+    });
+    const { result } = renderAuthenticatedSync(client);
+    await waitFor(() => expect(client.observeAuth).toHaveBeenCalled());
+
+    resolveAuth(null);
+
+    await waitFor(() => expect(result.current.ready).toBe(true));
+    expect(result.current.user).toBeNull();
+    expect(result.current.syncState).toBe("local");
+  });
+
+  it("proceeds as a guest and reports the failure when the Firebase bundle cannot load", async () => {
+    const { result } = renderHook(() =>
+      useProgressSync(options, {
+        firebaseConfigured: true,
+        loadFirebaseClient: async () => {
+          throw new Error("bundle unavailable");
+        },
+      }),
+    );
+
+    await waitFor(() => expect(result.current.notice).toBe("syncPrepareFailed"));
+    expect(result.current.syncState).toBe("error");
+    expect(result.current.ready).toBe(true);
+    expect(result.current.user).toBeNull();
+  });
+});
