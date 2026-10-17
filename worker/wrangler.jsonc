@@ -8,7 +8,7 @@
   "vars": {
     "FIREBASE_PROJECT_ID": "yuwenke-a1df9",
     "ALLOWED_ORIGIN": "https://haoly.app",
-    "CHAT_MODEL": "glm-5.3-flash",
+    "CHAT_MODEL": "glm-5.3-flash-free",
     "CHAT_ENABLED": "true",
     "CHAT_USER_DAILY_LIMIT": "30",
     "CHAT_GUEST_TOTAL_LIMIT": "3",

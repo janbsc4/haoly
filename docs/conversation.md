@@ -10,7 +10,7 @@ Léi returns a glossary for Mandarin quoted in English or Spanish explanatory pr
 
 Each new Mandarin attempt can receive a clickable naturalness indicator below the learner's message: Natural, Mostly natural, or Needs work. Expanding it shows Léi's explanation and a suggested sentence when improvement is needed. This assessment is generated with the normal reply, not an extra inference request. Start/help requests and older history without an assessment remain ungraded. These are AI suggestions, not proficiency scores. Reply audio uses the app's existing Chinese voice and mute settings.
 
-The browser saves the latest twelve exchanges separately for guests or each account and interface language. A new conversation asks before deleting history. The backend sends bounded conversation history and selected vocabulary to OpenCode Go, without account names or email addresses. It does not store transcripts.
+The browser saves the latest twelve exchanges separately for guests or each account and interface language. A new conversation asks before deleting history. The backend sends bounded conversation history and selected vocabulary to OpenCode, without account names or email addresses. It does not store transcripts.
 
 ## Hosting and authentication
 
@@ -39,7 +39,7 @@ The Google public-key cache is managed by `jose`. Like Firebase's default token 
 
    ```sh
    npm run deploy:chat
-   npx wrangler secret put OPENCODE_GO_API_KEY --config worker/wrangler.jsonc
+   npx wrangler secret put OPENCODE_API_KEY --config worker/wrangler.jsonc
    ```
 
    Never put the key in browser configuration, repository variables, source, or command-line arguments. The private `.env/` folder is ignored and is not read by the browser or uploaded with the Worker.
@@ -59,7 +59,7 @@ The Google public-key cache is managed by `jose`. Like Firebase's default token 
 
 ## Local development
 
-Run `npm run dev:chat -- --var ALLOWED_ORIGIN:http://localhost:4321`. Wrangler uses local Durable Object storage by default. Put `OPENCODE_GO_API_KEY` in the ignored `worker/.dev.vars` file for local inference. Guests can try three messages locally, while signed-in requests still verify real Firebase identities.
+Run `npm run dev:chat -- --var ALLOWED_ORIGIN:http://localhost:4321`. Wrangler uses local Durable Object storage by default. Put `OPENCODE_API_KEY` in the ignored `worker/.dev.vars` file for local inference. Guests can try three messages locally, while signed-in requests still verify real Firebase identities.
 
 Put the public Firebase configuration, `PUBLIC_CHAT_ENABLED=true`, and `PUBLIC_CHAT_API_URL=http://localhost:8787/conversation` in the root `.env.local`. This file can coexist with the private `.env/` directory. Restart the Astro server after changing public environment values.
 
@@ -71,7 +71,7 @@ Requests have a 128 KiB body limit, bounded message history, and a server-select
 
 Set `CHAT_ENABLED` to `"false"` in the Worker configuration and redeploy to stop inference, including requests from old browser bundles. `PUBLIC_CHAT_ENABLED=false` hides access in newly built clients but does not disable the backend.
 
-These limits constrain requests, not money. OpenCode's subscription allowances still apply. Leave paid provider overages disabled if you require a fixed subscription cost. OpenCode [describes Go as a coding-agent service](https://dev.opencode.ai/docs/go/#where-can-i-use-it); confirm shared language-tutoring use is permitted before public launch. Successful inference alone does not establish permission. The client identifies itself honestly as `Haoly-Language-Practice/1.0` and sends a stable, opaque conversation UUID.
+These limits constrain requests, not money. Léi uses `glm-5.3-flash-free` on the OpenCode Console endpoint with a Console API key. OpenCode offers it free for a limited time, and its provider follows a zero-retention policy without training on requests. When the free period ends, requests fail until `CHAT_MODEL` changes to a paid model such as `glm-5.3-flash` and the Console account has credits. The client identifies itself honestly as `Haoly-Language-Practice/1.0` and sends a stable, opaque conversation UUID.
 
 ## Implementation and verification
 

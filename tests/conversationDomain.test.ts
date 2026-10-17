@@ -173,7 +173,7 @@ describe("inference responses", () => {
     })).rejects.toMatchObject({ code: "unavailable" });
   });
 
-  it("calls Go and filters hallucinated or unstudied recap IDs", async () => {
+  it("calls OpenCode and filters hallucinated or unstudied recap IDs", async () => {
     const fetchMock = vi.fn<typeof fetch>().mockResolvedValue(
       new Response(
         JSON.stringify({
@@ -204,7 +204,7 @@ describe("inference responses", () => {
     expect(result.reply.practicedCardIds).toEqual([word.id]);
     expect(result.targetCardIds).toEqual([word.id]);
     expect(fetchMock.mock.calls[0][0]).toBe(
-      "https://opencode.ai/zen/go/v1/chat/completions",
+      "https://opencode.ai/inference/openai/v1/chat/completions",
     );
     expect(fetchMock.mock.calls[0][1]?.headers).toMatchObject({
       Authorization: "Bearer test-secret",
@@ -238,6 +238,13 @@ describe("inference responses", () => {
     expect(body).toMatchObject({ model: "glm-5.3-flash", reasoning_effort: "low", max_tokens: 4096 });
     expect(body).not.toHaveProperty("thinking");
     expect(result.model).toBe("glm-5.3-flash");
+  });
+
+  it("keeps low reasoning effort on the free GLM-5.3-Flash tier", async () => {
+    const fetchMock = vi.fn<typeof fetch>().mockRejectedValue(new Error("offline"));
+    await generateTutorReply(request, cards, { apiKey: "test-secret", model: "glm-5.3-flash-free", fetch: fetchMock }).catch(() => {});
+    const body = JSON.parse(fetchMock.mock.calls[0][1]?.body as string);
+    expect(body).toMatchObject({ model: "glm-5.3-flash-free", reasoning_effort: "low" });
   });
 
   it("uses MiMo-V2.6-Flash without GLM-specific inference settings", async () => {

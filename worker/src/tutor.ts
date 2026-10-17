@@ -181,7 +181,7 @@ export async function generateTutorReply(
   const { context, messages } = tutorMessages(request, cards);
   try {
     const response = await options.fetch(
-      "https://opencode.ai/zen/go/v1/chat/completions",
+      "https://opencode.ai/inference/openai/v1/chat/completions",
       {
         method: "POST",
         headers: {
@@ -195,7 +195,7 @@ export async function generateTutorReply(
           messages,
           max_tokens: 4096,
           // GLM-5.3 requires thinking; keep it light enough for short practice turns.
-          ...(["glm-5.3", "glm-5.3-flash"].includes(options.model)
+          ...(["glm-5.3", "glm-5.3-flash", "glm-5.3-flash-free"].includes(options.model)
             ? { reasoning_effort: "low" }
             : {}),
           response_format: { type: "json_object" },

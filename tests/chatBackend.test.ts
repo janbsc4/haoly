@@ -12,7 +12,7 @@ const reserve = vi.fn();
 const env = {
   FIREBASE_PROJECT_ID: "yuwenke-a1df9",
   ALLOWED_ORIGIN: "https://haoly.app",
-  OPENCODE_GO_API_KEY: "private-test-key",
+  OPENCODE_API_KEY: "private-test-key",
   CHAT_ENABLED: "true",
   CHAT_MODEL: "mimo-v2.6-flash",
   CHAT_USER_DAILY_LIMIT: "30",
@@ -166,7 +166,7 @@ it("fails closed when disabled, unconfigured, or unable to reserve allowance", a
     (await worker.fetch(request(), { ...env, CHAT_ENABLED: "false" })).status,
   ).toBe(503);
   expect(
-    (await worker.fetch(request(), { ...env, OPENCODE_GO_API_KEY: "" })).status,
+    (await worker.fetch(request(), { ...env, OPENCODE_API_KEY: "" })).status,
   ).toBe(503);
   for (const status of [429, 503]) {
     reserve.mockResolvedValue(new Response(null, { status }));
@@ -180,11 +180,11 @@ it("fails closed when disabled, unconfigured, or unable to reserve allowance", a
 });
 it("does not leak provider errors or refund a potentially billed request", async () => {
   vi.mocked(generateTutorReply).mockRejectedValue(
-    new Error(env.OPENCODE_GO_API_KEY),
+    new Error(env.OPENCODE_API_KEY),
   );
   const response = await worker.fetch(request(), env);
   expect(response.status).toBe(503);
-  expect(await response.text()).not.toContain(env.OPENCODE_GO_API_KEY);
+  expect(await response.text()).not.toContain(env.OPENCODE_API_KEY);
   expect(reserve).toHaveBeenCalledTimes(1);
 });
 it("returns a distinct safe timeout response", async () => {
