@@ -96,3 +96,18 @@ describe("shared visual identity", () => {
     expect(declarations(landing, "lp-naturalness summary")).toContain("color: var(--assessment-needs-work)");
   });
 });
+
+describe("header layering", () => {
+  it("never animates an ancestor of the account menu, which would trap it under the card", () => {
+    // A filled opacity or transform animation turns the element into a stacking
+    // context, so the menu's z-index would only count inside it.
+    const ancestors = ["header-tools", "account-area", "account-menu-wrap"];
+    for (const rule of app.matchAll(/([^{}]+)\{([^}]*animation:[^}]*)\}/g)) {
+      const selectors = rule[1].split(",").map((selector) => selector.trim());
+      for (const selector of selectors) {
+        const subject = selector.split(/\s*>\s*|\s+/).at(-1) ?? "";
+        expect(ancestors, `${selector} animates an account menu ancestor`).not.toContain(subject.replace(/^\./, ""));
+      }
+    }
+  });
+});

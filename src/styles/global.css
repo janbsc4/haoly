@@ -1841,12 +1841,14 @@ html:has(dialog[open]) {
 /* React swaps a skeleton for real content in one frame, so the content eases in
    over where the skeleton stood. Opacity and transform only: everything is laid
    out and interactive from its first frame. These elements mount when loading
-   hands off, not on every card or view change, because they are reused after. */
+   hands off, not on every card or view change, because they are reused after.
+   The avatar fades, not its wrapper: a filled opacity animation makes a
+   stacking context that would trap the account menu under the card. */
 .count-value,
 .study-heading > h1,
 .study-heading > p,
 .account-area > .sync-label,
-.account-area > .account-menu-wrap {
+.account-menu-wrap > .avatar-button {
   animation: fade-in 220ms ease-out both;
 }
 
