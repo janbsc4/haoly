@@ -8,7 +8,7 @@ export default defineConfig({
     css: true,
     environmentOptions: {
       jsdom: {
-        url: "http://localhost/yuwenke/",
+        url: "http://localhost/",
       },
     },
     // Component tests exercise the study app as a guest. CI exports the real

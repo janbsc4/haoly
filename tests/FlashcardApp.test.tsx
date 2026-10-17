@@ -124,7 +124,7 @@ describe("FlashcardApp", () => {
   });
 
   it("opens Léi from the landing link and clears the fragment when returning to cards", async () => {
-    window.history.replaceState(null, "", "/yuwenke/app/es/#conversation");
+    window.history.replaceState(null, "", "/app/es/#conversation");
     try {
       const user = userEvent.setup();
       renderApp([card]);
@@ -135,7 +135,7 @@ describe("FlashcardApp", () => {
       expect(await screen.findByRole("button", { name: "Buscar" })).toBeVisible();
       expect(screen.queryByRole("searchbox")).not.toBeInTheDocument();
     } finally {
-      window.history.replaceState(null, "", "/yuwenke/");
+      window.history.replaceState(null, "", "/");
     }
   });
 

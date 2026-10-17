@@ -39,7 +39,8 @@ function requireAttribute(document, selector, attribute, expected, route) {
 
 function siteAndBase() {
   const site = String(astroConfig.site).replace(/\/$/, "");
-  const base = `/${String(astroConfig.base).replace(/^\/+|\/+$/g, "")}/`;
+  const trimmed = String(astroConfig.base).replace(/^\/+|\/+$/g, "");
+  const base = trimmed ? `/${trimmed}/` : "/";
   return { site, base };
 }
 

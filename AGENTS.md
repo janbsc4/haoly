@@ -2,7 +2,7 @@
 
 ## What this is
 
-Yuwenke turns personal Chinese class notes into flashcards. Static Astro site with a React study interface, hosted on GitHub Pages under the `/yuwenke/` base path, localized to Spanish and English. Content comes from personal class notes, not an authoritative Mandarin reference.
+Yuwenke turns personal Chinese class notes into flashcards. Static Astro site with a React study interface, hosted on GitHub Pages at the `haoly.app` custom domain, localized to Spanish and English. Content comes from personal class notes, not an authoritative Mandarin reference.
 
 ## Architecture
 
@@ -32,7 +32,7 @@ Review every card as a complete learning unit: prompt, answer, explanation, and 
 
 Node.js 22.13+ is required. Commands live in `package.json`. The husky `pre-push` hook runs lint, typecheck, and tests; CI is the unskippable layer and runs the same checks on pull requests before deploying. The hook also appends each test run, passing or failing, to the gitignored `.test-history/runs.jsonl` (`scripts/record_test_run.mjs`), a local record of which tests fail and how often.
 
-For visual QA, build and serve the real routes, then screenshot `http://localhost:4321/yuwenke/` and `/yuwenke/app/<locale>/` (the `--host` flag matters: an unexposed localhost render misses nothing, but the preview browser reaches the machine by IP):
+For visual QA, build and serve the real routes, then screenshot `http://localhost:4321/` and `/app/<locale>/` (the `--host` flag matters: an unexposed localhost render misses nothing, but the preview browser reaches the machine by IP):
 
 ```
 npm run build && npm run preview -- --host 0.0.0.0 --port 4321

@@ -8,7 +8,7 @@ The content combines Mandarin characters, pinyin, Spanish meanings, explanations
 
 The site is a static Astro app with one React study interface. It can be hosted for free on GitHub Pages at:
 
-`https://janbsc4.github.io/yuwenke/`
+`https://haoly.app/`
 
 It includes:
 
@@ -50,7 +50,7 @@ npm install
 npm run dev
 ```
 
-Astro serves the project under its configured `/yuwenke/` base path. Useful checks are:
+Astro serves the project from the site root of `haoly.app`. Useful checks are:
 
 ```sh
 npm test
@@ -81,7 +81,7 @@ The app works completely as a guest when Firebase is not configured. Progress st
 
 1. Create a Firebase project and a Web App.
 2. Enable Google in Authentication → Sign-in method.
-3. Add `janbsc4.github.io`, `localhost`, and `127.0.0.1` as authorized domains.
+3. Add `haoly.app`, `localhost`, and `127.0.0.1` as authorized domains.
 4. Create a Firestore database.
 5. Copy `.env.example` to `.env` and fill in the public web configuration.
 6. Deploy the security rules separately from GitHub Pages:

@@ -2,8 +2,8 @@ import { defineConfig } from "astro/config";
 import react from "@astrojs/react";
 
 export default defineConfig({
-  site: "https://janbsc4.github.io",
-  base: "/yuwenke",
+  site: "https://haoly.app",
+  base: "/",
   trailingSlash: "always",
   integrations: [react()],
   vite: {
