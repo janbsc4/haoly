@@ -1816,6 +1816,21 @@ html:has(dialog[open]) {
   border-radius: 24px;
 }
 
+/* React swaps a skeleton for real content in one frame, so the content eases in
+   over where the skeleton stood. Opacity and transform only: the card is laid out
+   and interactive from its first frame. These elements mount when a loader hands
+   off, not on every card, because StudyCard is reused across the queue. */
+.app-shell > .site-header,
+.app-shell > .study-workspace {
+  animation: fade-in 220ms ease-out both;
+}
+
+.session-panel > .session-progress,
+.session-panel > .study-card,
+.session-panel > .decision-area {
+  animation: reveal 280ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
 .noscript-message {
   max-width: 600px;
   padding: 16px;
