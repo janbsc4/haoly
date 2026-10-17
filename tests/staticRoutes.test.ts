@@ -15,8 +15,8 @@ import {
   validateAppEntryRouteHtml,
 } from "../scripts/validate_static_routes.mjs";
 
-const site = "https://janbsc4.github.io";
-const base = "/yuwenke/";
+const site = "https://haoly.app";
+const base = "/";
 
 function routeHtml(locale: "es" | "en") {
   const metadata =
@@ -57,16 +57,16 @@ describe("localized static route validation", () => {
   it("rejects metadata that points at the wrong locale", () => {
     expect(() =>
       validateLocalizedRouteHtml(
-        routeHtml("en").replace("/yuwenke/app/en/", "/yuwenke/app/es/"),
+        routeHtml("en").replace("/app/en/", "/app/es/"),
         "en",
       ),
-    ).toThrow("/yuwenke/app/en/");
+    ).toThrow("/app/en/");
   });
 
   it("ignores expected metadata hidden in comments", () => {
     const html = routeHtml("en").replace(
-      '<link rel="canonical" href="https://janbsc4.github.io/yuwenke/app/en/">',
-      '<!-- <link rel="canonical" href="https://janbsc4.github.io/yuwenke/app/en/"> -->',
+      '<link rel="canonical" href="https://haoly.app/app/en/">',
+      '<!-- <link rel="canonical" href="https://haoly.app/app/en/"> -->',
     );
     expect(() => validateLocalizedRouteHtml(html, "en")).toThrow(
       "exactamente un elemento",
@@ -75,8 +75,8 @@ describe("localized static route validation", () => {
 
   it("rejects conflicting duplicate metadata", () => {
     const html = routeHtml("en").replace(
-      '<link rel="canonical" href="https://janbsc4.github.io/yuwenke/app/en/">',
-      '<link rel="canonical" href="https://janbsc4.github.io/yuwenke/app/en/">' +
+      '<link rel="canonical" href="https://haoly.app/app/en/">',
+      '<link rel="canonical" href="https://haoly.app/app/en/">' +
         '<link rel="canonical" href="https://example.com/wrong/">',
     );
     expect(() => validateLocalizedRouteHtml(html, "en")).toThrow(
@@ -193,7 +193,7 @@ describe("Home Screen app entry", () => {
       <a lang="en" href="${base}app/en/">Open</a>`;
     expect(() => validateAppEntryRouteHtml(html)).not.toThrow();
     expect(() => validateAppEntryRouteHtml(html.replace(`${base}app/en/`, "/wrong/")))
-      .toThrow("se esperaba /yuwenke/app/en/");
+      .toThrow("se esperaba /app/en/");
   });
 });
 

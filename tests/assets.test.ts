@@ -63,10 +63,10 @@ describe("Yuwenke identity assets", () => {
     ]);
   });
 
-  it("keeps the previous installed identity when the launch URL changes", () => {
+  it("identifies the installed app by the site root, independent of the launch URL", () => {
     const manifest = JSON.parse(publicFile("site.webmanifest").toString("utf8")) as { id: string };
-    const previousStart = new URL("./", "https://example.test/yuwenke/site.webmanifest");
+    const siteRoot = new URL("./", "https://haoly.app/site.webmanifest");
     // Unlike start_url, a relative manifest id resolves against the origin.
-    expect(new URL(manifest.id, previousStart.origin).href).toBe(previousStart.href);
+    expect(new URL(manifest.id, siteRoot.origin).href).toBe(siteRoot.href);
   });
 });

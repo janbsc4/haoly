@@ -49,7 +49,7 @@ beforeEach(() => {
         CHAT_GLOBAL_DAILY_LIMIT: "8",
         CHAT_GLOBAL_MONTHLY_LIMIT: "3000",
         FIREBASE_PROJECT_ID: "local-test",
-        ALLOWED_ORIGIN: "https://janbsc4.github.io",
+        ALLOWED_ORIGIN: "https://haoly.app",
         CHAT_ENABLED: "true",
         CHAT_MODEL: "mimo-v2.6-flash",
         OPENCODE_GO_API_KEY: "test-key",
@@ -101,7 +101,7 @@ it("enforces three guest messages and limits resets from the same network", asyn
   const send = (id: string) => mf.dispatchFetch("https://lei.example/conversation", {
     method: "POST",
     headers: {
-      Origin: "https://janbsc4.github.io",
+      Origin: "https://haoly.app",
       "X-Lei-Guest-Id": id,
       "CF-Connecting-IP": "203.0.113.9",
       "Content-Type": "application/json",
@@ -140,7 +140,7 @@ it("runs signed authentication, durable quota, and inference together in the Wor
   const response = await mf.dispatchFetch("https://lei.example/conversation", {
     method: "POST",
     headers: {
-      Origin: "https://janbsc4.github.io",
+      Origin: "https://haoly.app",
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
     },

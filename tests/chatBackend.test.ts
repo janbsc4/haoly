@@ -11,7 +11,7 @@ vi.mock("../worker/src/tutor", async (original) => ({
 const reserve = vi.fn();
 const env = {
   FIREBASE_PROJECT_ID: "yuwenke-a1df9",
-  ALLOWED_ORIGIN: "https://janbsc4.github.io",
+  ALLOWED_ORIGIN: "https://haoly.app",
   OPENCODE_GO_API_KEY: "private-test-key",
   CHAT_ENABLED: "true",
   CHAT_MODEL: "mimo-v2.6-flash",

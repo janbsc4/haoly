@@ -3,7 +3,7 @@
   "short_name": "Yuwenke",
   "description": "Cartas de mandarín y español a partir de notas de clase.",
   "lang": "es",
-  "id": "/yuwenke/",
+  "id": "/",
   "start_url": "./app/",
   "scope": "./",
   "display": "standalone",
