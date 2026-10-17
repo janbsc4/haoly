@@ -1,3 +1,8 @@
 npm run lint
 npm run check
-npm test
+# Record every test run, passing or failing, in the gitignored .test-history/.
+rm -f .test-history/last-run.json
+status=0
+npm test -- --reporter=default --reporter=json --outputFile.json=.test-history/last-run.json || status=$?
+node scripts/record_test_run.mjs || echo "No se pudo registrar la ejecución de tests."
+exit $status
