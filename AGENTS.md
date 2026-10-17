@@ -12,6 +12,14 @@ Firestore stores learner state (progress, favorites, Open Packs, Reset Boundary)
 
 `chinese-knowledge.md` is generated from the CSV by `scripts/build_chinese_knowledge.mjs`. Never edit generated files; edit the source and rerun the generator. Tests diff committed generated files against generator output, so hand edits fail CI.
 
+### Where things live
+
+* Study app shell and tabs: `src/components/FlashcardApp.tsx`; card UI: `src/components/StudyCard.tsx`.
+* Léi chat UI: `src/components/Conversation.tsx` + `src/styles/conversation.css`; client and saved sessions: `src/lib/chatClient.ts`, `src/lib/conversation.ts`; request/reply schemas shared with the Worker: `shared/chat.ts`; backend: `worker/`.
+* The local preview has no Léi backend. To see chat bubbles, write a saved session (shape in `src/lib/conversation.ts`) to localStorage key `yuwenke:conversation:v1:guest:<locale>` and reload.
+* Styles: color and font tokens in `src/styles/brand.css`; app styles in `src/styles/global.css` (late rules near the end override earlier ones for the same selector); landing page only in `src/styles/landing.css`.
+* UI copy per locale: `src/lib/messages.ts`, `src/lib/chatMessages.ts`.
+
 ## Card identity and packs
 
 Card IDs (`FC001`, ...) and pack IDs (`CP001`, ...) are stable identifiers referenced by saved user progress. Append new cards and packs at the end; never reorder or remove existing entries. Identity changes are migrations, not edits. `scripts/build_flashcards.mjs` refuses to shrink the dataset or renumber, and requires complete English content per card.
@@ -32,7 +40,7 @@ Review every card as a complete learning unit: prompt, answer, explanation, and 
 
 Node.js 22.13+ is required. Commands live in `package.json`. The husky `pre-push` hook runs lint, typecheck, and tests; CI is the unskippable layer and runs the same checks on pull requests before deploying. The hook also appends each test run, passing or failing, to the gitignored `.test-history/runs.jsonl` (`scripts/record_test_run.mjs`), a local record of which tests fail and how often.
 
-For visual QA, build and serve the real routes, then screenshot `http://localhost:4321/` and `/app/<locale>/` (the `--host` flag matters: an unexposed localhost render misses nothing, but the preview browser reaches the machine by IP):
+For visual QA, build and serve the real routes, then screenshot `/` and `/app/<locale>/`. Astro moves to the next free port if 4321 is taken, so read the port from its output. Prefer `localhost` when the browser can reach it: an IP origin over plain HTTP is not a secure context, so `crypto.randomUUID` is missing and the Converse tab crashes. `--host` exposes the server for browsers that can only reach the machine by IP:
 
 ```
 npm run build && npm run preview -- --host 0.0.0.0 --port 4321
