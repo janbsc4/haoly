@@ -3,6 +3,7 @@ import { loadFlashcards } from "../data/loadFlashcards";
 import { loadCardPackData } from "../data/loadCardPacks";
 import { landingLangResolverScript, localeUrl } from "../lib/locale";
 import { messages } from "../lib/messages";
+import FontPreload from "../components/FontPreload.astro";
 import "../styles/landing.css";
 
 const base = import.meta.env.BASE_URL;
@@ -22,6 +23,7 @@ const meta = messages.es.metadata;
 <html lang="es" data-lang="es">
   <head>
     <meta charset="UTF-8" />
+    <FontPreload />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="description" content={meta.description} data-content-es={messages.es.metadata.description} data-content-en={messages.en.metadata.description} />
     <meta name="theme-color" content="#f6f2ea" />

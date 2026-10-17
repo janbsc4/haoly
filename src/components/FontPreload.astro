@@ -1,0 +1,8 @@
+---
+// Fetch the UI font alongside the HTML so it is ready at first paint instead of
+// swapping in after CSS is parsed. Importing the same file brand.css uses
+// resolves to the same hashed asset, so the browser reuses this download.
+import hankenLatin from "../../public/fonts/hanken-grotesk-latin.woff2?url";
+---
+
+<link rel="preload" href={hankenLatin} as="font" type="font/woff2" crossorigin />
