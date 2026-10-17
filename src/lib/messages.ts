@@ -231,12 +231,12 @@ const es: Messages = {
     socialDescription:
       "De las cartas a la conversación: practica mandarín con tus palabras y la ayuda de Léi.",
     ogLocale: "es_ES",
-    ogImageAlt: "Yuwenke, cartas de mandarín y español",
+    ogImageAlt: "Haoly, cartas de mandarín y español",
     noscript: "Necesitas activar JavaScript para usar las cartas.",
   },
   brand: {
     tagline: "Aprende Mucho Chino",
-    homeAria: "Yuwenke, inicio",
+    homeAria: "Haoly, inicio",
   },
   localeSwitcher: {
     aria: "Idioma",
@@ -387,7 +387,7 @@ const es: Messages = {
       {
         platform: "iPhone / iPad",
         body:
-          "Ajustes → Accesibilidad → Lectura y voz → Voces → Chino. Elige la variante de China continental, abre una voz y toca el botón de descarga. En versiones anteriores, busca Contenido hablado en lugar de Lectura y voz. Cuando termine la descarga, vuelve a abrir Yuwenke y elige la voz en Voz de pronunciación → Voz china. Yuwenke solo muestra las voces que el navegador pone a su disposición; algunas voces descargadas pueden no aparecer.",
+          "Ajustes → Accesibilidad → Lectura y voz → Voces → Chino. Elige la variante de China continental, abre una voz y toca el botón de descarga. En versiones anteriores, busca Contenido hablado en lugar de Lectura y voz. Cuando termine la descarga, vuelve a abrir Haoly y elige la voz en Voz de pronunciación → Voz china. Haoly solo muestra las voces que el navegador pone a su disposición; algunas voces descargadas pueden no aparecer.",
       },
       {
         platform: "Windows",
@@ -442,7 +442,7 @@ const es: Messages = {
   },
   help: {
     trigger: "¿Cómo funciona?",
-    title: "Cómo funciona Yuwenke",
+    title: "Cómo funciona Haoly",
     closeAria: "Cerrar explicación",
     steps: {
       study: {
@@ -548,12 +548,12 @@ const en: Messages = {
     socialDescription:
       "From flashcards to conversation: practice Mandarin with your words and help from Léi.",
     ogLocale: "en_US",
-    ogImageAlt: "Yuwenke, Mandarin and English flashcards",
+    ogImageAlt: "Haoly, Mandarin and English flashcards",
     noscript: "You need to enable JavaScript to use the flashcards.",
   },
   brand: {
     tagline: "Learn Lots of Chinese",
-    homeAria: "Yuwenke, home",
+    homeAria: "Haoly, home",
   },
   localeSwitcher: {
     aria: "Language",
@@ -704,7 +704,7 @@ const en: Messages = {
       {
         platform: "iPhone / iPad",
         body:
-          "Settings → Accessibility → Read & Speak → Voices → Chinese. Choose the China mainland variety, open a voice, and tap the download button. On older versions, look for Spoken Content instead of Read & Speak. Once the download finishes, reopen Yuwenke and select the voice under Pronunciation voice → Chinese voice. Yuwenke only lists voices made available by your browser; some downloaded voices may not appear.",
+          "Settings → Accessibility → Read & Speak → Voices → Chinese. Choose the China mainland variety, open a voice, and tap the download button. On older versions, look for Spoken Content instead of Read & Speak. Once the download finishes, reopen Haoly and select the voice under Pronunciation voice → Chinese voice. Haoly only lists voices made available by your browser; some downloaded voices may not appear.",
       },
       {
         platform: "Windows",
@@ -755,7 +755,7 @@ const en: Messages = {
   },
   help: {
     trigger: "How does it work?",
-    title: "How Yuwenke works",
+    title: "How Haoly works",
     closeAria: "Close explanation",
     steps: {
       study: {

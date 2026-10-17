@@ -2,7 +2,7 @@
 
 ## What this is
 
-Yuwenke turns personal Chinese class notes into flashcards. Static Astro site with a React study interface, hosted on GitHub Pages at the `haoly.app` custom domain, localized to Spanish and English. Content comes from personal class notes, not an authoritative Mandarin reference.
+Haoly turns personal Chinese class notes into flashcards. Static Astro site with a React study interface, hosted on GitHub Pages at the `haoly.app` custom domain, localized to Spanish and English. Content comes from personal class notes, not an authoritative Mandarin reference.
 
 ## Architecture
 

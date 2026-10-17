@@ -1,12 +1,12 @@
 ---
 name: process-new-material
-description: Incorporate new Mandarin class material from new-material into the Yuwenke card dataset.
+description: Incorporate new Mandarin class material from new-material into the Haoly card dataset.
 disable-model-invocation: true
 ---
 
 # Process new material
 
-Turn the unprocessed files in `new-material/` into correct, coherent Yuwenke
+Turn the unprocessed files in `new-material/` into correct, coherent Haoly
 learning material. The output is a **lesson**: every new or revised Source
 Flashcard is complete, natural, and belongs to exactly one Card Pack.
 

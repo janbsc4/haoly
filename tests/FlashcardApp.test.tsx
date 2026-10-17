@@ -758,7 +758,7 @@ describe("FlashcardApp", () => {
     const trigger = screen.getByRole("menuitem", { name: "¿Cómo funciona?" });
 
     await user.click(trigger);
-    const dialog = screen.getByRole("dialog", { name: "Cómo funciona Yuwenke" });
+    const dialog = screen.getByRole("dialog", { name: "Cómo funciona Haoly" });
     expect(dialog).toBeInTheDocument();
     expect(
       screen.getByText(/Los conceptos plantean una sola pregunta en español/),

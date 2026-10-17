@@ -1,6 +1,6 @@
-# Yuwenke Study
+# Haoly Study
 
-Yuwenke turns authored Mandarin learning material into directional cards and controls which material each learner can discover and practise.
+Haoly turns authored Mandarin learning material into directional cards and controls which material each learner can discover and practise.
 
 ## Learning material
 

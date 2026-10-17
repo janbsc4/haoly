@@ -65,7 +65,7 @@ beforeEach(() => {
           "https://opencode.ai/zen/go/v1/chat/completions",
         );
         expect(request.headers.get("User-Agent")).toBe(
-          "Yuwenke-Language-Practice/1.0",
+          "Haoly-Language-Practice/1.0",
         );
         return (await provider(await request.json())) as Response;
       },

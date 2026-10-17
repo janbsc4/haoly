@@ -32,7 +32,7 @@ export function CardPackBooster({
       </span>
       <span className="booster-pack__wrapper">
         <span className="booster-pack__crimp booster-pack__crimp--top" />
-        <span className="booster-pack__edition">Yuwenke · {pack.id}</span>
+        <span className="booster-pack__edition">Haoly · {pack.id}</span>
         <span className="booster-pack__mark" lang="zh-Hans">{pack.mark}</span>
         <span className="booster-pack__title">{localized(pack.title, locale)}</span>
         <span className="booster-pack__count">{m.packs.cardCount(unitCount)}</span>

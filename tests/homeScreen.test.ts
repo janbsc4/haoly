@@ -13,8 +13,8 @@ describe("mobile Home Screen suggestion", () => {
   beforeEach(() => {
     document.documentElement.lang = "en";
     document.body.innerHTML = `<aside hidden>
-      <div data-home-screen-lang="es" hidden><button data-home-screen-install>Instalar Yuwenke</button></div>
-      <div data-home-screen-lang="en" hidden><button data-home-screen-install>Install Yuwenke</button></div>
+      <div data-home-screen-lang="es" hidden><button data-home-screen-install>Instalar Haoly</button></div>
+      <div data-home-screen-lang="en" hidden><button data-home-screen-install>Install Haoly</button></div>
       <button type="button" data-home-screen-dismiss></button>
     </aside>`;
     hint = document.querySelector("aside")!;

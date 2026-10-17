@@ -71,7 +71,7 @@ Requests have a 128 KiB body limit, bounded message history, and a server-select
 
 Set `CHAT_ENABLED` to `"false"` in the Worker configuration and redeploy to stop inference, including requests from old browser bundles. `PUBLIC_CHAT_ENABLED=false` hides access in newly built clients but does not disable the backend.
 
-These limits constrain requests, not money. OpenCode's subscription allowances still apply. Leave paid provider overages disabled if you require a fixed subscription cost. OpenCode [describes Go as a coding-agent service](https://dev.opencode.ai/docs/go/#where-can-i-use-it); confirm shared language-tutoring use is permitted before public launch. Successful inference alone does not establish permission. The client identifies itself honestly as `Yuwenke-Language-Practice/1.0` and sends a stable, opaque conversation UUID.
+These limits constrain requests, not money. OpenCode's subscription allowances still apply. Leave paid provider overages disabled if you require a fixed subscription cost. OpenCode [describes Go as a coding-agent service](https://dev.opencode.ai/docs/go/#where-can-i-use-it); confirm shared language-tutoring use is permitted before public launch. Successful inference alone does not establish permission. The client identifies itself honestly as `Haoly-Language-Practice/1.0` and sends a stable, opaque conversation UUID.
 
 ## Implementation and verification
 

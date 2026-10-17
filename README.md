@@ -1,6 +1,6 @@
-# Yuwenke
+# Haoly
 
-Yuwenke is a personal experiment with notes from my Chinese class. It explores how class material can become structured study data and a small, useful flashcard app.
+Haoly is a personal experiment with notes from my Chinese class. It explores how class material can become structured study data and a small, useful flashcard app.
 
 The content combines Mandarin characters, pinyin, Spanish meanings, explanations, examples, grammar ideas, and cultural notes. It is based on personal class notes and is not intended to be an authoritative Mandarin reference.
 

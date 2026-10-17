@@ -711,13 +711,13 @@ export default function FlashcardApp({
         <a className="brand" href={homeUrl()} aria-label={m.brand.homeAria}>
           <img
             className="brand-mark"
-            src={`${import.meta.env.BASE_URL}yuwenke-mark.png`}
+            src={`${import.meta.env.BASE_URL}haoly-mark.png`}
             alt=""
             width="48"
             height="48"
           />
           <span>
-            <strong>Yuwenke</strong>
+            <strong>Haoly</strong>
             <small>{m.brand.tagline}</small>
           </span>
         </a>

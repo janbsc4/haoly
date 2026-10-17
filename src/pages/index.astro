@@ -34,13 +34,13 @@ const meta = messages.es.metadata;
     <link rel="alternate" hreflang="en" href={new URL(appUrl("en"), Astro.site)} />
     <link rel="alternate" hreflang="x-default" href={canonicalUrl} />
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Yuwenke" />
-    <meta property="og:title" content="Yuwenke" />
+    <meta property="og:site_name" content="Haoly" />
+    <meta property="og:title" content="Haoly" />
     <meta property="og:description" content={meta.socialDescription} data-content-es={messages.es.metadata.socialDescription} data-content-en={messages.en.metadata.socialDescription} />
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:image" content={socialImageUrl} />
     <meta property="og:image:alt" content={meta.ogImageAlt} data-content-es={messages.es.metadata.ogImageAlt} data-content-en={messages.en.metadata.ogImageAlt} />
-    <title>Yuwenke · 语文课</title>
+    <title>Haoly · 好礼</title>
     <script is:inline set:html={landingLangResolverScript()} />
     <script is:inline data-install-suppression>
       window.addEventListener("beforeinstallprompt", (event) => event.preventDefault());
@@ -53,11 +53,11 @@ const meta = messages.es.metadata;
   <body>
     <a class="lp-skip" href="#main"><span class="lang-es">Ir al contenido</span><span class="lang-en">Skip to content</span></a>
     <header class="lp-header lp-shell">
-      <a class="lp-brand" href={base} aria-label="Yuwenke">
-        <img src={`${base}yuwenke-mark.png`} alt="" width="40" height="40" />
-        <span>Yuwenke <small lang="zh-Hans">语文课</small></span>
+      <a class="lp-brand" href={base} aria-label="Haoly">
+        <img src={`${base}haoly-mark.png`} alt="" width="40" height="40" />
+        <span>Haoly <small lang="zh-Hans">好礼</small></span>
       </a>
-      <nav class="lp-nav" aria-label="Yuwenke">
+      <nav class="lp-nav" aria-label="Haoly">
         <a href="#packs"><span class="lang-es">Las cartas</span><span class="lang-en">The cards</span></a>
         <a href="#lei"><span class="lang-es">Conoce a Léi</span><span class="lang-en">Meet Léi</span></a>
       </nav>
@@ -87,7 +87,7 @@ const meta = messages.es.metadata;
         <div class="lp-preview-stage">
           <div class="lp-preview-grid" aria-hidden="true"></div>
           <div class="lp-preview">
-            <div class="lp-preview-header"><span class="lp-preview-brand">Yuwenke</span><span class="lp-preview-status"><span class="lp-dot" aria-hidden="true"></span><span class="lang-es">Ejemplo interactivo</span><span class="lang-en">Interactive preview</span></span></div>
+            <div class="lp-preview-header"><span class="lp-preview-brand">Haoly</span><span class="lp-preview-status"><span class="lp-dot" aria-hidden="true"></span><span class="lang-es">Ejemplo interactivo</span><span class="lang-en">Interactive preview</span></span></div>
             <div class="lp-preview-tabs" aria-hidden="true"><span class="is-active"><span class="lang-es">Estudiar</span><span class="lang-en">Study</span></span><span><span class="lang-es">Dominadas</span><span class="lang-en">Mastered</span></span><span><span class="lang-es">Favoritas</span><span class="lang-en">Favorites</span></span></div>
             <div class="lp-demo-meta"><span class="lang-es">{messages.es.directions.toHanzi}</span><span class="lang-en">{messages.en.directions.toHanzi}</span><span>{demoCard.id}</span></div>
             <article class="lp-demo-card">
@@ -130,7 +130,7 @@ const meta = messages.es.metadata;
               <span class="lp-pack-mark lp-hanzi" lang="zh-Hans">{pack.mark}</span>
               <h3><span class="lang-es">{pack.title.es}</span><span class="lang-en">{pack.title.en}</span></h3>
               <p><span class="lang-es">{pack.description.es}</span><span class="lang-en">{pack.description.en}</span></p>
-              <div class="lp-pack-bottom"><span>{cardsInPack(pack.id)} <span class="lang-es">cartas</span><span class="lang-en">cards</span></span><span lang="zh-Hans" aria-hidden="true">语文课</span></div>
+              <div class="lp-pack-bottom"><span>{cardsInPack(pack.id)} <span class="lang-es">cartas</span><span class="lang-en">cards</span></span><span lang="zh-Hans" aria-hidden="true">好礼</span></div>
             </article>
           ))}
         </div>
@@ -176,13 +176,13 @@ const meta = messages.es.metadata;
           <details><summary><span class="lang-es">¿De verdad es gratis?</span><span class="lang-en">Really free?</span><span aria-hidden="true">+</span></summary><p><span class="lang-es">Sí. Las cartas y los packs son gratis, sin suscripción. Léi también es gratis, con límites de uso: prueba tres mensajes sin cuenta e inicia sesión con Google para continuar.</span><span class="lang-en">Yes. Cards and packs are free, with no subscription. Léi is free too, with usage limits: try three messages without an account, then sign in with Google to continue.</span></p></details>
           <details open><summary><span class="lang-es">¿Necesito una cuenta?</span><span class="lang-en">Do I need an account?</span><span aria-hidden="true">+</span></summary><p><span class="lang-es">No para estudiar. Tu progreso, favoritas y packs abiertos se guardan en este dispositivo. Inicia sesión con Google si quieres sincronizarlos entre dispositivos.</span><span class="lang-en">Not to study. Your progress, favorites, and open packs are saved on this device. Sign in with Google if you want to sync them across devices.</span></p></details>
           <details><summary><span class="lang-es">¿Puedo estudiar sin conexión?</span><span class="lang-en">Can I study offline?</span><span aria-hidden="true">+</span></summary><p><span class="lang-es">Sí, las cartas funcionan sin conexión después de cargar la app. Conversar con Léi e iniciar sesión necesitan internet.</span><span class="lang-en">Yes, cards work offline after the app has loaded. Chatting with Léi and signing in need internet.</span></p></details>
-          <details><summary><span class="lang-es">¿Dónde se guardan mis conversaciones?</span><span class="lang-en">Where are my conversations saved?</span><span aria-hidden="true">+</span></summary><p><span class="lang-es">Los últimos doce intercambios se guardan en tu navegador, separados por cuenta e idioma. Al conversar, se envían un historial limitado y vocabulario al servicio de IA; no se guardan transcripciones en Firestore ni en el backend de Yuwenke.</span><span class="lang-en">The latest twelve exchanges stay in your browser, separated by account and language. During chat, bounded history and vocabulary are sent to the AI service; transcripts aren’t stored in Firestore or Yuwenke’s backend.</span></p></details>
+          <details><summary><span class="lang-es">¿Dónde se guardan mis conversaciones?</span><span class="lang-en">Where are my conversations saved?</span><span aria-hidden="true">+</span></summary><p><span class="lang-es">Los últimos doce intercambios se guardan en tu navegador, separados por cuenta e idioma. Al conversar, se envían un historial limitado y vocabulario al servicio de IA; no se guardan transcripciones en Firestore ni en el backend de Haoly.</span><span class="lang-en">The latest twelve exchanges stay in your browser, separated by account and language. During chat, bounded history and vocabulary are sent to the AI service; transcripts aren’t stored in Firestore or Haoly’s backend.</span></p></details>
         </div>
       </section>
 
-      <section class="lp-closing lp-shell" aria-labelledby="closing-title"><span class="lp-closing-mark lp-hanzi" lang="zh-Hans" aria-hidden="true">学</span><div><h2 id="closing-title"><span class="lang-es">El resto viene con la práctica.</span><span class="lang-en">The rest comes with practice.</span></h2><p class="lp-closing-note"><span class="lang-es">Que crezca tu chino. No tu racha.</span><span class="lang-en">Grow your Chinese. Not your streak.</span></p></div><a class="lp-button lp-button-primary lang-es" href={appUrl("es")}>Abrir Yuwenke <span aria-hidden="true">→</span></a><a class="lp-button lp-button-primary lang-en" href={appUrl("en")}>Open Yuwenke <span aria-hidden="true">→</span></a></section>
+      <section class="lp-closing lp-shell" aria-labelledby="closing-title"><span class="lp-closing-mark lp-hanzi" lang="zh-Hans" aria-hidden="true">学</span><div><h2 id="closing-title"><span class="lang-es">El resto viene con la práctica.</span><span class="lang-en">The rest comes with practice.</span></h2><p class="lp-closing-note"><span class="lang-es">Que crezca tu chino. No tu racha.</span><span class="lang-en">Grow your Chinese. Not your streak.</span></p></div><a class="lp-button lp-button-primary lang-es" href={appUrl("es")}>Abrir Haoly <span aria-hidden="true">→</span></a><a class="lp-button lp-button-primary lang-en" href={appUrl("en")}>Open Haoly <span aria-hidden="true">→</span></a></section>
     </main>
-    <footer class="lp-footer lp-shell"><a class="lp-brand" href={base}>Yuwenke <small lang="zh-Hans">语文课</small></a><p><span class="lang-es">Aprende palabras. Ten algo que decir.</span><span class="lang-en">Learn words. Have something to say.</span></p><a href="#main"><span class="lang-es">Volver arriba</span><span class="lang-en">Back to top</span> ↑</a></footer>
+    <footer class="lp-footer lp-shell"><a class="lp-brand" href={base}>Haoly <small lang="zh-Hans">好礼</small></a><p><span class="lang-es">Aprende palabras. Ten algo que decir.</span><span class="lang-en">Learn words. Have something to say.</span></p><a href="#main"><span class="lang-es">Volver arriba</span><span class="lang-en">Back to top</span> ↑</a></footer>
     <noscript><p class="lp-noscript"><span class="lang-es">Activa JavaScript para probar la carta. </span><span class="lang-en">Enable JavaScript to try the card. </span><a href={appUrl("es")}>Español</a> · <a href={appUrl("en")}>English</a></p></noscript>
   </body>
 </html>

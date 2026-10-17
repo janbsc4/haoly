@@ -208,7 +208,7 @@ describe("inference responses", () => {
     );
     expect(fetchMock.mock.calls[0][1]?.headers).toMatchObject({
       Authorization: "Bearer test-secret",
-      "User-Agent": "Yuwenke-Language-Practice/1.0",
+      "User-Agent": "Haoly-Language-Practice/1.0",
       "x-opencode-session": request.sessionId,
     });
     expect(

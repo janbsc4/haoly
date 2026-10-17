@@ -26,12 +26,12 @@ function icoSizes(name: string): number[] {
   });
 }
 
-describe("Yuwenke identity assets", () => {
+describe("Haoly identity assets", () => {
   it("provides the expected raster sizes and multi-resolution favicon", () => {
     expect(pngSize("apple-touch-icon.png")).toEqual([180, 180]);
     expect(pngSize("icon-192.png")).toEqual([192, 192]);
     expect(pngSize("icon-512.png")).toEqual([512, 512]);
-    expect(pngSize("yuwenke-mark.png")).toEqual([96, 96]);
+    expect(pngSize("haoly-mark.png")).toEqual([96, 96]);
     expect(pngSize("favicon-32.png")).toEqual([32, 32]);
     expect(pngSize("og.png")).toEqual([1200, 630]);
     expect(icoSizes("favicon.ico")).toEqual([16, 32, 48]);
@@ -47,12 +47,12 @@ describe("Yuwenke identity assets", () => {
 
   it("uses an alpha-capable PNG favicon", () => {
     expect(pngColorType("favicon-32.png")).toBe(6);
-    expect(pngColorType("yuwenke-mark.png")).toBe(6);
+    expect(pngColorType("haoly-mark.png")).toBe(6);
   });
 
   it("uses base-path-safe relative URLs in the web manifest", () => {
     const manifest = JSON.parse(publicFile("site.webmanifest").toString("utf8"));
-    expect(manifest.name).toBe("Yuwenke");
+    expect(manifest.name).toBe("Haoly");
     expect(manifest.start_url).toBe("./app/");
     expect(manifest.scope).toBe("./");
     expect(manifest.background_color).toBe("#ffffff");

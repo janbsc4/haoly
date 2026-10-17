@@ -187,7 +187,7 @@ export async function generateTutorReply(
         headers: {
           Authorization: `Bearer ${options.apiKey}`,
           "Content-Type": "application/json",
-          "User-Agent": "Yuwenke-Language-Practice/1.0",
+          "User-Agent": "Haoly-Language-Practice/1.0",
           "x-opencode-session": request.sessionId,
         },
         body: JSON.stringify({
