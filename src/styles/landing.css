@@ -75,7 +75,10 @@ p { margin-top: 0; text-wrap: pretty; }
 /* The answer is written into a 田字格 cell, the square every learner first writes in. */
 .lp-demo-prompt { margin: 6px 0 18px; text-align: center; font-size: 2.6rem; font-weight: 700; letter-spacing: -0.04em; line-height: 1.1; }
 .lp-demo-cell { display: grid; place-items: center; width: fit-content; min-width: 104px; height: 104px; margin: 0 auto; padding-inline: 8px; border: 1.5px solid var(--grid-line); border-radius: 4px; background: linear-gradient(90deg, transparent calc(50% - 0.5px), var(--grid-line) 0 calc(50% + 0.5px), transparent 0), linear-gradient(transparent calc(50% - 0.5px), var(--grid-line) 0 calc(50% + 0.5px), transparent 0); font-size: 4.2rem; font-weight: 600; line-height: 1; }
-.lp-demo-placeholder .lp-demo-cell { border-style: dashed; }
+.lp-demo-veil { color: var(--ink); filter: blur(9px); opacity: 0.55; user-select: none; }
+.lp-demo-steps { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 0; padding: 0; list-style: none; counter-reset: step; }
+.lp-demo-steps li { display: flex; align-items: center; gap: 6px; padding: 6px 12px 6px 6px; border: 1px solid var(--border); border-radius: 999px; background: var(--surface); color: var(--ink); font-size: 0.84rem; counter-increment: step; }
+.lp-demo-steps li::before { content: counter(step); display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--cinnabar-dark); color: var(--surface); font-size: 0.72rem; font-weight: 700; }
 .lp-demo-placeholder, .lp-demo-answer { min-height: 270px; }
 .lp-demo-placeholder { display: flex; flex-direction: column; align-items: center; gap: 16px; text-align: center; color: var(--muted); font-size: 0.95rem; line-height: 1.6; }
 .lp-demo-placeholder p { margin: 0; }
