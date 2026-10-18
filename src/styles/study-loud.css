@@ -35,7 +35,8 @@
 .app-shell .skip-button { border: var(--sl-line); color: var(--ink); font-weight: 700; }
 .app-shell .skip-button:hover { border-color: var(--ink); color: var(--cinnabar); }
 .app-shell .search-field input { border: var(--sl-line); border-radius: 999px; }
-.app-shell .search-field input:focus { border-color: var(--ink); box-shadow: var(--sl-drop); }
+/* The drop shadow is the focus indicator here; the global outline would draw a second ring. */
+.app-shell .search-field input:focus { border-color: var(--ink); box-shadow: var(--sl-drop); outline: none; }
 
 /* Study workspace */
 .app-shell .study-heading h1 { font-size: 2.6rem; letter-spacing: -0.055em; line-height: 1.05; }
