@@ -1,0 +1,105 @@
+/* Experimental /en/ landing: landing.css turned up. Same paper, logo and font; heavier type,
+   ink outlines with hard offset shadows, and a cinnabar strike for everything we leave out. */
+.lx {
+  --lx-line: 2px solid var(--ink);
+  --lx-drop: 6px 6px 0 var(--ink);
+  --lx-drop-small: 4px 4px 0 var(--ink);
+}
+
+.lx h1, .lx h2 { font-weight: 700; letter-spacing: -0.055em; }
+.lx h2 { font-size: clamp(2.2rem, 4.6vw, 3.7rem); line-height: 1.02; }
+.lx h2 em { color: var(--cinnabar); font-style: normal; }
+
+/* Buttons trade soft glows for a printed, pressable look. */
+.lx .lp-button { border: var(--lx-line); border-radius: 999px; font-weight: 700; transition: transform 140ms ease, box-shadow 140ms ease, background-color 140ms ease; }
+.lx .lp-button:hover { transform: translate(-2px, -2px); box-shadow: var(--lx-drop-small); }
+.lx .lp-button:active { transform: none; box-shadow: none; }
+.lx .lp-button-primary { border-color: var(--ink); background: var(--cinnabar); box-shadow: var(--lx-drop-small); }
+.lx .lp-button-primary:hover { border-color: var(--ink); background: var(--cinnabar-dark); box-shadow: 6px 6px 0 var(--ink); }
+.lx .lp-button-light { border-color: var(--ink); }
+.lx .lp-text-link { text-decoration-color: var(--cinnabar); text-decoration-thickness: 2px; }
+
+/* Hero: bigger, tighter, and one loud line in cinnabar. */
+.lx-kicker { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 26px; padding: 0; }
+.lx-kicker span { padding: 5px 12px 5px 10px; border: var(--lx-line); border-radius: 999px; background: var(--surface); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.lx-kicker span::before { content: "✕"; margin-right: 7px; color: var(--cinnabar); }
+.lx .lp-hero { padding-block: 32px 96px; }
+.lx .lp-hero h1 { font-size: clamp(3.2rem, 7.4vw, 6.4rem); line-height: 0.94; margin-bottom: 30px; }
+.lx .lp-hero h1 em { color: var(--cinnabar); }
+.lx .lp-hero-sub { color: var(--ink); font-size: 1.2rem; }
+.lx .lp-actions .lp-button { min-height: 58px; padding-inline: 30px; font-size: 1.08rem; }
+.lx .lp-reassurance { color: var(--ink); font-weight: 600; }
+.lx .lp-reassurance > span:first-child { color: var(--cinnabar); }
+
+/* The demo card becomes a printed card on the practice grid. */
+.lx .lp-preview-stage::before, .lx .lp-preview-stage::after { border: var(--lx-line); }
+.lx .lp-preview-stage::before { background: var(--cinnabar-soft); }
+.lx .lp-preview { border: var(--lx-line); box-shadow: 10px 10px 0 var(--ink); }
+.lx .lp-preview-header { border-bottom: var(--lx-line); }
+.lx .lp-demo-card { border: var(--lx-line); box-shadow: none; }
+.lx .lp-demo-reveal { border-radius: 999px; font-weight: 700; }
+.lx .lp-preview-caption { color: var(--ink); font-weight: 600; }
+
+/* Facts read as a solid ink strip; the zeros are the point. */
+.lx .lp-facts { border: 0; border-radius: 24px; background: var(--ink); color: var(--surface); }
+.lx .lp-facts p { border-color: color-mix(in srgb, var(--surface), transparent 82%); }
+.lx .lp-facts strong { font-size: clamp(2rem, 3.6vw, 3rem); font-weight: 700; }
+.lx .lp-facts p:nth-child(n + 3) strong { color: var(--cinnabar-soft); }
+.lx .lp-facts p > span { color: var(--border-dark); }
+
+/* Them versus us: struck-through habits on the left, the plain alternative on the right. */
+.lx-versus-table { margin-top: 48px; overflow: hidden; border: var(--lx-line); border-radius: 24px; background: var(--surface); box-shadow: var(--lx-drop); }
+.lx-versus-row { display: grid; grid-template-columns: 1fr 1fr; }
+.lx-versus-row + .lx-versus-row { border-top: 1px solid var(--border); }
+.lx-versus-row > span { padding: 20px 28px; font-size: 1.06rem; line-height: 1.45; }
+.lx-versus-row > span:first-child { color: var(--muted); background: var(--surface-warm); border-right: var(--lx-line); }
+.lx-versus-row s { text-decoration-color: var(--cinnabar); text-decoration-thickness: 2px; }
+.lx-versus-row > span:last-child { font-weight: 700; }
+.lx-versus-row:not(.lx-versus-head) > span:last-child::before { content: "✓"; margin-right: 12px; color: var(--jade); font-weight: 700; }
+.lx-versus-head > span { padding-block: 14px; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+.lx-versus-head > span:last-child { color: var(--surface); background: var(--ink); }
+.lx .lx-versus + .lp-packs { padding-top: 0; }
+
+/* Packs and features pick up the same outline-and-drop treatment. */
+.lx .lp-pack { border: var(--lx-line); }
+.lx .lp-pack:hover { transform: translate(-3px, -3px); box-shadow: var(--lx-drop); }
+.lx .lp-pack h3 { font-weight: 700; }
+.lx .lp-method-grid article { border: var(--lx-line); }
+.lx .lp-method-grid article::after { color: var(--cinnabar); }
+.lx .lp-method-grid h3 { font-size: 1.3rem; font-weight: 700; }
+.lx .lp-feature-mark { border-width: 2px; }
+
+.lx .lp-lei h2 em { color: var(--surface); opacity: 1; text-decoration: underline; text-decoration-color: var(--cinnabar-soft); text-decoration-thickness: 3px; text-underline-offset: 8px; }
+.lx .lp-chat-example { border: var(--lx-line); box-shadow: 10px 10px 0 var(--jade-dark); }
+
+.lx .lp-faq details { border: var(--lx-line); }
+.lx .lp-faq details[open] { box-shadow: var(--lx-drop-small); }
+
+.lx .lp-closing { border-radius: 28px; }
+.lx .lp-closing h2 { font-size: clamp(2.2rem, 5vw, 4rem); }
+.lx .lp-closing h2 em { color: var(--cinnabar-soft); }
+.lx .lp-closing-note { color: var(--surface); font-weight: 600; }
+.lx .lp-closing .lp-button-primary { border-color: var(--surface); box-shadow: 4px 4px 0 var(--surface); }
+
+@media (max-width: 1000px) {
+  .lx .lp-hero h1 { font-size: 4rem; }
+}
+@media (max-width: 760px) {
+  .lx .lp-hero h1 { font-size: clamp(2.8rem, 11vw, 4rem); }
+  .lx-versus-row > span { padding: 16px 18px; font-size: 0.98rem; }
+}
+@media (max-width: 560px) {
+  /* Stack each pair so neither side gets squeezed into a sliver. */
+  .lx-versus-head { display: none !important; }
+  .lx-versus-row { grid-template-columns: 1fr; }
+  .lx-versus-row > span:first-child { border-right: 0; padding-bottom: 8px; }
+  .lx-versus-row > span:last-child { padding-top: 8px; }
+  .lx-versus-row + .lx-versus-row { border-top: var(--lx-line); }
+}
+@media (max-width: 440px) {
+  .lx .lp-hero h1 { font-size: 2.9rem; }
+  .lx .lp-facts strong { font-size: 1.9rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lx .lp-button:hover, .lx .lp-pack:hover { transform: none; }
+}
