@@ -65,7 +65,7 @@ Put the public Firebase configuration, `PUBLIC_CHAT_ENABLED=true`, and `PUBLIC_C
 
 ## Usage limits
 
-Default limits are three guest attempts per browser ID in total, at most 30 guest attempts per network per UTC day, 30 attempts per signed-in user per UTC day, six per calendar minute, 300 globally per UTC day, and 3,000 globally per UTC month. Failed provider requests still consume an attempt because they may have incurred inference usage. There are no automatic inference retries. Guests and accounts share the global allowance.
+Default limits are three guest attempts per browser ID in total, at most 30 guest attempts per network per UTC day, ten attempts per signed-in user per UTC day, six per calendar minute, 300 globally per UTC day, and 3,000 globally per UTC month. Failed provider requests still consume an attempt because they may have incurred inference usage. There are no automatic inference retries. Guests and accounts share the global allowance.
 
 Requests have a 128 KiB body limit, bounded message history, and a server-selected vocabulary context. Provider output is limited to 4,096 tokens and a 60-second timeout, with a 70-second browser timeout. Requests use low reasoning effort so thinking leaves room for the structured reply. Timeouts show a specific retry message. Invalid provider output and unavailable service leave the learner's draft intact. Guest and offline flashcard study remain available.
 
