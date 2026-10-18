@@ -319,14 +319,16 @@ it.each(["en", "es"] as const)("shows the learner's message before the response 
   await userEvent.click(screen.getByRole("button", { name: locale === "en" ? "Send" : "Enviar" }));
   expect(screen.getByText("我喜欢喝茶。")).toBeVisible();
   expect(input).toHaveValue("");
-  expect(input).toBeDisabled();
+  // Disabling would blur the field and close the iOS keyboard mid-send.
+  expect(input).toHaveFocus();
+  expect(input).toHaveAttribute("readonly");
   const checking = locale === "en" ? "Checking your sentence…" : "Comprobando tu frase…";
   expect(screen.getByRole("status", { name: checking })).toBeVisible();
   expect(readConversation("alice", locale).turns).toHaveLength(1);
   resolve({ ...response, reply: { ...response.reply, naturalness: {
     level: "natural", explanation: "Your sentence sounds natural.", betterChinese: "",
   } } });
-  await waitFor(() => expect(input).toBeEnabled());
+  await waitFor(() => expect(input).not.toHaveAttribute("readonly"));
   expect(screen.queryByRole("status", { name: checking })).not.toBeInTheDocument();
   expect(screen.getAllByText("我喜欢喝茶。")).toHaveLength(1);
   expect(screen.getByText("Natural")).toBeVisible();
@@ -485,6 +487,7 @@ it("resizes the chat for the visible keyboard viewport and cleans up when leavin
   const viewport = Object.assign(new EventTarget(), { height: 664, offsetTop: 0 });
   const removeListener = vi.spyOn(viewport, "removeEventListener");
   vi.stubGlobal("visualViewport", viewport);
+  vi.useFakeTimers();
   try {
     const shell = document.createElement("div");
     shell.className = "app-shell app-shell--chat";
@@ -500,6 +503,7 @@ it("resizes the chat for the visible keyboard viewport and cleans up when leavin
     viewport.height = 340;
     viewport.offsetTop = 24;
     viewport.dispatchEvent(new Event("resize"));
+    vi.advanceTimersToNextFrame();
     expect(shell.style.getPropertyValue("--chat-viewport-height")).toBe("340px");
     expect(shell.style.getPropertyValue("--chat-viewport-top")).toBe("24px");
     expect(transcript.scrollTop).toBe(900);
@@ -507,8 +511,13 @@ it("resizes the chat for the visible keyboard viewport and cleans up when leavin
     viewport.height = 400;
     viewport.offsetTop = 0;
     viewport.dispatchEvent(new Event("scroll"));
+    vi.advanceTimersToNextFrame();
     expect(shell.style.getPropertyValue("--chat-viewport-top")).toBe("0px");
     expect(transcript.scrollTop).toBe(100);
+    // Safari may finish the keyboard animation without a final event.
+    viewport.height = 664;
+    vi.advanceTimersByTime(400);
+    expect(shell.style.getPropertyValue("--chat-viewport-height")).toBe("664px");
     view.unmount();
     expect(shell.style.getPropertyValue("--chat-viewport-height")).toBe("");
     expect(shell.style.getPropertyValue("--chat-viewport-top")).toBe("");
@@ -516,6 +525,7 @@ it("resizes the chat for the visible keyboard viewport and cleans up when leavin
     expect(removeListener).toHaveBeenCalledWith("scroll", expect.any(Function));
     shell.remove();
   } finally {
+    vi.useRealTimers();
     vi.unstubAllGlobals();
   }
 });

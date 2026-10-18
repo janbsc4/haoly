@@ -164,7 +164,9 @@ export default function Conversation({
     const shell = mainRef.current?.closest<HTMLElement>(".app-shell");
     if (!viewport || !shell) return;
     // iOS resizes the visual viewport, rather than 100dvh, for the keyboard.
-    const resize = () => {
+    let frame = 0;
+    let settle = 0;
+    const sync = () => {
       const transcript = transcriptRef.current;
       const atBottom = transcript && transcript.scrollHeight - transcript.clientHeight - transcript.scrollTop < 24;
       shell.style.setProperty("--chat-viewport-height", `${viewport.height}px`);
@@ -172,12 +174,24 @@ export default function Conversation({
       fitReplyInput(inputRef.current);
       if (atBottom) transcript.scrollTop = transcript.scrollHeight;
     };
-    resize();
+    // Safari can skip the final event of the keyboard animation, which leaves the
+    // shell offset by the keyboard height, so sync once more after it settles.
+    const resize = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(sync);
+      clearTimeout(settle);
+      settle = window.setTimeout(sync, 400);
+    };
+    sync();
     viewport.addEventListener("resize", resize);
     viewport.addEventListener("scroll", resize);
+    document.addEventListener("focusout", resize);
     return () => {
+      cancelAnimationFrame(frame);
+      clearTimeout(settle);
       viewport.removeEventListener("resize", resize);
       viewport.removeEventListener("scroll", resize);
+      document.removeEventListener("focusout", resize);
       shell.style.removeProperty("--chat-viewport-height");
       shell.style.removeProperty("--chat-viewport-top");
     };
@@ -786,7 +800,10 @@ export default function Conversation({
                 value={draft}
                 maxLength={CHAT_MAX_MESSAGE}
                 rows={1}
-                disabled={busy || (!owner && remaining === 0)}
+                // Read-only rather than disabled while sending: disabling blurs the
+                // field, which closes the iOS keyboard and reflows the whole chat.
+                readOnly={busy}
+                disabled={!owner && remaining === 0}
                 placeholder={m.placeholder}
                 onChange={(event) => setDraft(event.target.value)}
                 onKeyDown={(event) => {
@@ -807,6 +824,9 @@ export default function Conversation({
                 aria-label={m.send}
                 title={m.send}
                 type="submit"
+                // Keep focus in the reply field so the keyboard stays open and the
+                // button does not move out from under the tap before it registers.
+                onMouseDown={(event) => event.preventDefault()}
                 disabled={busy || !draft.trim() || (!owner && remaining === 0)}
               >
                 <AppIcon name="send" />
