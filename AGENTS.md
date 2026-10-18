@@ -49,11 +49,13 @@ npm run build && npm run preview -- --host 0.0.0.0 --port 4321
 
 `npm test` excludes `tests/firestore.rules.test.ts`, which needs Java 21 and the Firestore emulator; run it with `npm run test:rules`, or both suites with `npm run test:all`.
 
+Unless otherwise stated build and ship directly on main.
+
 ## Truth is the code
 
 The repository, not prose, is the authority on how things work. Documentation explains; executable checks adjudicate.
 
-* Every rule that matters must be mechanically enforceable. If a rule here could be a check instead, move it into a check and shrink this file.
+* Every rule that matters must be mechanically enforceable.
 * When you introduce or tighten an invariant, add its guardian in the same change.
 * When documentation and code disagree, the code wins. Update the documentation in the same change.
 * Prefer checks that fail with expected-versus-actual messages over checks that require human judgment.
