@@ -17,3 +17,6 @@ Flashcard Content:
 	- qingwen
 	- hěn gāoxìng rènshi dàjiā.
 - [x] Nombres propios deberian ser lilas (en todas las lenguas). Explicar esto en la nueva seccion de "Como funciona?""
+
+Infrastructure:
+- [ ] Make the GitHub repo private and move hosting from GitHub Pages to Cloudflare Pages (GitHub Free only serves Pages from public repos). Update the deploy workflow, repoint haoly.app DNS, and check the Actions minutes budget.

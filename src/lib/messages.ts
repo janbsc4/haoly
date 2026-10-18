@@ -176,6 +176,23 @@ export interface Messages {
     openPack: (title: string) => string;
     restart: (view: StudyView) => string;
   };
+  feedback: {
+    trigger: string;
+    title: string;
+    closeAria: string;
+    intro: string;
+    kindLabel: string;
+    kinds: Record<"bug" | "idea" | "other", string>;
+    messageLabel: string;
+    placeholder: Record<"bug" | "idea" | "other", string>;
+    privacy: string;
+    send: string;
+    sending: string;
+    sent: string;
+    done: string;
+    failed: string;
+    rateLimited: string;
+  };
   help: {
     trigger: string;
     title: string;
@@ -442,6 +459,27 @@ const es: Messages = {
         : view === "favorites"
           ? "Repasar de nuevo"
           : "Revisar de nuevo",
+  },
+  feedback: {
+    trigger: "Enviar comentarios",
+    title: "Enviar comentarios",
+    closeAria: "Cerrar comentarios",
+    intro: "¿Algo no funciona o se te ocurre una mejora? Cuéntamelo.",
+    kindLabel: "Tipo",
+    kinds: { bug: "Error", idea: "Idea", other: "Otro" },
+    messageLabel: "Mensaje",
+    placeholder: {
+      bug: "¿Qué pasó y qué esperabas que pasara?",
+      idea: "¿Qué te gustaría que hiciera Haoly?",
+      other: "Escribe tu comentario",
+    },
+    privacy: "Se envía de forma anónima, con el idioma, la sección actual y el navegador. Si quieres respuesta, deja un contacto en el mensaje.",
+    send: "Enviar",
+    sending: "Enviando…",
+    sent: "¡Gracias! Tu comentario ha llegado.",
+    done: "Cerrar",
+    failed: "No se pudo enviar. Inténtalo de nuevo más tarde.",
+    rateLimited: "Has enviado varios comentarios seguidos. Inténtalo de nuevo en una hora.",
   },
   help: {
     trigger: "¿Cómo funciona?",
@@ -761,6 +799,27 @@ const en: Messages = {
         : view === "favorites"
           ? "Practice again"
           : "Review again",
+  },
+  feedback: {
+    trigger: "Send feedback",
+    title: "Send feedback",
+    closeAria: "Close feedback",
+    intro: "Something broken, or an idea to make Haoly better? Let me know.",
+    kindLabel: "Type",
+    kinds: { bug: "Bug", idea: "Idea", other: "Other" },
+    messageLabel: "Message",
+    placeholder: {
+      bug: "What happened, and what did you expect?",
+      idea: "What would you like Haoly to do?",
+      other: "Write your feedback",
+    },
+    privacy: "Sent anonymously, with your language, current section, and browser. If you want a reply, include a way to reach you.",
+    send: "Send",
+    sending: "Sending…",
+    sent: "Thanks! Your feedback arrived.",
+    done: "Close",
+    failed: "Could not send. Please try again later.",
+    rateLimited: "You sent several messages in a row. Please try again in an hour.",
   },
   help: {
     trigger: "How does it work?",

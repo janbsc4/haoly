@@ -60,6 +60,8 @@ import { Modal } from "./Modal";
 import { StudyCard } from "./StudyCard";
 import { CardPackDialogs } from "./CardPackDialogs";
 import { CardPackBooster } from "./CardPackBooster";
+import { FeedbackDialog } from "./FeedbackDialog";
+import { feedbackEndpoint } from "../lib/feedbackClient";
 
 interface FlashcardAppProps {
   cards: Flashcard[];
@@ -192,6 +194,7 @@ export default function FlashcardApp({
   const [helpOpen, setHelpOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
   const [voiceOpen, setVoiceOpen] = useState(false);
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [voiceOptions, setVoiceOptions] = useState<ChineseVoiceOption[]>(
     () => chineseVoiceOptions(),
   );
@@ -612,6 +615,7 @@ export default function FlashcardApp({
         chatOpen ||
         filterSheetOpen ||
         helpOpen ||
+        feedbackOpen ||
         loginOpen ||
         voiceOpen ||
         accountOpen ||
@@ -654,6 +658,7 @@ export default function FlashcardApp({
     completed,
     current,
     filterSheetOpen,
+    feedbackOpen,
     helpOpen,
     loaded,
     loginOpen,
@@ -857,6 +862,19 @@ export default function FlashcardApp({
                     >
                       {m.help.trigger}
                     </button>
+                    {feedbackEndpoint() ? (
+                      <button
+                        type="button"
+                        role="menuitem"
+                        aria-haspopup="dialog"
+                        onClick={() => {
+                          setAccountOpen(false);
+                          setFeedbackOpen(true);
+                        }}
+                      >
+                        {m.feedback.trigger}
+                      </button>
+                    ) : null}
                     {SUPPORTED_LOCALES.length > 1 ? (
                       <div className="account-menu-locale" role="group" aria-label={m.localeSwitcher.aria}>
                         <span aria-hidden="true">{m.localeSwitcher.aria}</span>
@@ -1246,6 +1264,16 @@ export default function FlashcardApp({
             <p>{m.help.detailsAccount}</p>
           </div>
         </Modal>
+      ) : null}
+
+      {feedbackOpen ? (
+        <FeedbackDialog
+          m={m.feedback}
+          locale={locale}
+          context={`${window.location.pathname} · ${chatOpen ? "converse" : activeView}`}
+          onClose={() => setFeedbackOpen(false)}
+          returnFocus={accountButtonRef}
+        />
       ) : null}
 
       {loginOpen ? (
