@@ -8,6 +8,7 @@ import { messages } from "../../../lib/messages";
 import type { Locale } from "../../../types";
 import FontPreload from "../../../components/FontPreload.astro";
 import "../../../styles/global.css";
+import "../../../styles/study-loud.css";
 
 export function getStaticPaths() {
   return SUPPORTED_LOCALES.map((locale) => ({ params: { locale } }));
