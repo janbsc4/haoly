@@ -87,14 +87,34 @@ function reducedMotionRequested(): boolean {
   );
 }
 
+const MORPH_TARGET_WAIT_MS = 1000;
+
+// Resolves once `selector` matches, or after `timeoutMs` so a slow load never
+// freezes the page.
+function waitForElement(selector: string, timeoutMs: number): Promise<void> {
+  return new Promise((resolve) => {
+    const startedAt = Date.now();
+    const check = () => {
+      if (document.querySelector(selector) || Date.now() - startedAt >= timeoutMs) resolve();
+      else window.setTimeout(check, 16);
+    };
+    check();
+  });
+}
+
 // The study card is narrower than the chat panel; morph one into the other so
-// switching to and from Converse resizes the card instead of jumping.
-function morphMainCard(update: () => void) {
+// switching to and from Converse resizes the card instead of jumping. The new
+// snapshot waits for `target` when given: the chat panel loads lazily, and
+// snapshotting its loading placeholder would fade the card out instead.
+function morphMainCard(update: () => void, target?: string) {
   if (typeof document.startViewTransition !== "function" || reducedMotionRequested()) {
     update();
     return;
   }
-  document.startViewTransition(() => flushSync(update));
+  document.startViewTransition(async () => {
+    flushSync(update);
+    if (target) await waitForElement(target, MORPH_TARGET_WAIT_MS);
+  });
 }
 
 function initials(
@@ -806,7 +826,7 @@ export default function FlashcardApp({
             aria-current={loaded && chatOpen ? "page" : undefined}
             // Fetch the chat on touch, not on click, so it is usually ready by the time the tab opens.
             onPointerDown={() => void loadConversation()}
-            onClick={() => { if (!chatOpen) morphMainCard(() => setChatOpen(true)); }}
+            onClick={() => { if (!chatOpen) morphMainCard(() => setChatOpen(true), ".conversation"); }}
           >
             <AppIcon name="chat" />
             <span>{locale === "es" ? "Conversa" : "Converse"}</span>
