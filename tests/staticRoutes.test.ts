@@ -17,6 +17,7 @@ import {
   resolveLegacyRedirectFromHtml,
   validateLocalizedRouteHtml,
   validateLandingRouteHtml,
+  validateLocalizedLandingRouteHtml,
   validateAppEntryRouteHtml,
   validateLegacyLocaleRouteHtml,
 } from "../scripts/validate_static_routes.mjs";
@@ -158,6 +159,41 @@ describe("landing root validation", () => {
       } },
     });
     expect(attributes).toEqual({ "data-lang": expected, lang: expected });
+  });
+});
+
+describe("single-language landing validation", () => {
+  function sharedLandingHtml(locale: "es" | "en") {
+    return `<!doctype html>
+<html lang="${locale}" data-lang="${locale}">
+<head>
+<link rel="canonical" href="${site}${base}${locale}/">
+<meta property="og:url" content="${site}${base}${locale}/">
+<link rel="alternate" hreflang="es" href="${site}${base}es/">
+<link rel="alternate" hreflang="en" href="${site}${base}en/">
+<link rel="alternate" hreflang="x-default" href="${site}${base}">
+</head>
+<body><a href="${base}study/${locale}/">Open</a><a href="${base}study/${locale}/#conversation">Chat</a></body>
+</html>`;
+  }
+
+  it.each(["es", "en"] as const)("accepts a shareable %s landing that stays in its language", (locale) => {
+    expect(() => validateLocalizedLandingRouteHtml(sharedLandingHtml(locale), locale)).not.toThrow();
+  });
+
+  it("rejects a shareable landing that links the app in the other language", () => {
+    const html = sharedLandingHtml("en").replace("</body>", `<a href="${base}study/es/">Abrir</a></body>`);
+    expect(() => validateLocalizedLandingRouteHtml(html, "en")).toThrow("solo a la app en en");
+  });
+
+  it("rejects a shareable landing hidden from search engines", () => {
+    const html = sharedLandingHtml("es").replace("</head>", '<meta name="robots" content="noindex"></head>');
+    expect(() => validateLocalizedLandingRouteHtml(html, "es")).toThrow("noindex");
+  });
+
+  it("rejects a shareable landing whose canonical points at the homepage", () => {
+    const html = sharedLandingHtml("es").replace(`href="${site}${base}es/">\n<meta`, `href="${site}${base}">\n<meta`);
+    expect(() => validateLocalizedLandingRouteHtml(html, "es")).toThrow("canonical");
   });
 });
 

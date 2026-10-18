@@ -1,0 +1,14 @@
+---
+// One string per locale. With several locales on the page, each renders in a span the
+// landing's html[data-lang] toggle shows or hides; with one, it renders as plain text.
+import type { Locale } from "../types";
+
+interface Props {
+  locales: Locale[];
+  text: Record<Locale, string>;
+}
+
+const { locales, text } = Astro.props;
+---
+
+{locales.length > 1 ? locales.map((locale) => <span class={`lang-${locale}`}>{text[locale]}</span>) : text[locales[0]]}

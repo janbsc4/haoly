@@ -30,7 +30,8 @@ describe("shared visual identity", () => {
     expect(headings).toContain("font-family: var(--font-ui)");
     expect(headings).toContain("font-weight: 700");
     expect(landing).not.toContain("--font-display");
-    expect(readSource("src/pages/index.astro")).not.toMatch(/Young Serif|young-serif/);
+    expect(readSource("src/components/NoBsLanding.astro")).not.toMatch(/Young Serif|young-serif/);
+    expect(readSource("src/styles/landing-loud.css")).not.toContain("@font-face");
   });
 
   it("uses matching primary and ink button colors, including hover states", () => {
@@ -47,12 +48,10 @@ describe("shared visual identity", () => {
   });
 
   it("removes marketing eyebrows while keeping the sample card's actual prompt label", () => {
-    const page = readSource("src/pages/index.astro");
+    const page = readSource("src/components/NoBsLanding.astro");
     expect(page).not.toContain("lp-eyebrow");
     expect(landing).not.toContain("lp-eyebrow");
-    expect(page).toContain('class="lp-demo-label"');
-    expect(page).toContain("messages.es.card.promptEyebrow");
-    expect(page).toContain("messages.en.card.promptEyebrow");
+    expect(page).toMatch(/class="lp-demo-label"><T .*?messages\[l\]\.card\.promptEyebrow/);
   });
 
   it("shares a visible jade keyboard ring across interactive controls", () => {

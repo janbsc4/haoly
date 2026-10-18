@@ -1,31 +1,39 @@
 ---
-// Experimental landing page: a louder, no-nonsense pitch against gamified apps, previewed at
-// /en/ and /es/ before it replaces the bilingual root page. Copy lives here, per locale,
-// because the markup is identical and only the words change.
+// The landing page: a loud, no-nonsense pitch against gamified apps. The homepage renders
+// both languages behind the ES/EN toggle; /es/ and /en/ render one, for sharing a language.
+// Copy lives here, per locale, because the markup is identical and only the words change.
 import { loadFlashcards } from "../data/loadFlashcards";
 import { loadCardPackData } from "../data/loadCardPacks";
-import { localeUrl } from "../lib/locale";
+import { landingLangResolverScript, localeUrl } from "../lib/locale";
 import type { Locale } from "../types";
 import { messages } from "../lib/messages";
 import FontPreload from "./FontPreload.astro";
+import T from "./LocaleText.astro";
 import "../styles/landing.css";
 import "../styles/landing-loud.css";
 
 interface Props {
-  locale: Locale;
+  /** "both" is the homepage; a single locale is that language's shareable page. */
+  locale: Locale | "both";
 }
 
 const { locale } = Astro.props;
-const other: Locale = locale === "en" ? "es" : "en";
+const bilingual = locale === "both";
+const locales: Locale[] = bilingual ? ["es", "en"] : [locale];
+// Only the first locale's markup is visible before the toggle resolves the language.
+const primary = locales[0];
 const base = import.meta.env.BASE_URL;
-const appUrl = localeUrl(locale);
-const conversationUrl = `${appUrl}#conversation`;
+const pageUrl = (target: Locale | "both") => new URL(target === "both" ? base : `${base}${target}/`, Astro.site);
+const canonicalUrl = pageUrl(locale);
+const socialImageUrl = new URL(`${base}og.png`, Astro.site);
+const conversationUrl = (target: Locale) => `${localeUrl(target)}#conversation`;
+// Toggled by html[data-lang] on the homepage; unclassed on a single-language page.
+const langClass = (target: Locale) => (bilingual ? `lang-${target}` : undefined);
 const cards = loadFlashcards();
 const { packs, packIdByCardId } = loadCardPackData(cards);
 const cardsInPack = (packId: string) => cards.filter((card) => packIdByCardId[card.id] === packId).length;
 const demoCard = cards.find((card) => card.id === "FC002")!;
 const featuredPacks = [packs[0], packs[1], packs[5], packs[9]];
-const t = messages[locale];
 
 const copy = {
   en: {
@@ -185,27 +193,52 @@ const copy = {
     backToTop: "Volver arriba",
     noscript: "Activa JavaScript para probar la carta.",
   },
-}[locale];
+};
+type Copy = (typeof copy)[Locale];
+const pick = (read: (copy: Copy, locale: Locale) => string) =>
+  Object.fromEntries((["es", "en"] as const).map((target) => [target, read(copy[target], target)])) as Record<Locale, string>;
+// Attributes cannot be toggled per language, so the homepage names both.
+const attr = (read: (copy: Copy) => string) => locales.map((target) => read(copy[target])).join(" / ");
+const demoText = {
+  prompt: { es: demoCard.espanol, en: demoCard.ingles },
+  explanation: { es: demoCard.explicacion, en: demoCard.explicacion_ingles },
+  example: { es: demoCard.ejemplo_espanol, en: demoCard.ejemplo_ingles },
+};
 
 const methodMarks = [
   { mark: "忆", hanzi: true },
   { mark: "☆", hanzi: false },
   { mark: "听", hanzi: true },
 ];
+const meta = messages[primary].metadata;
+const metaToggle = (key: "description" | "socialDescription" | "ogImageAlt") =>
+  bilingual ? { "data-content-es": messages.es.metadata[key], "data-content-en": messages.en.metadata[key] } : {};
 ---
 
 <!doctype html>
-<html lang={locale} data-lang={locale}>
+<html lang={primary} data-lang={primary}>
   <head>
     <meta charset="UTF-8" />
+    {bilingual && <script is:inline set:html={landingLangResolverScript()} />}
     <FontPreload />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="description" content={t.metadata.description} />
-    <meta name="robots" content="noindex" />
+    <meta name="description" content={meta.description} {...metaToggle("description")} />
     <meta name="theme-color" content="#f6f2ea" />
     <link rel="icon" href={`${base}favicon.ico`} sizes="16x16 32x32 48x48" />
     <link rel="icon" href={`${base}favicon-32.png`} type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href={`${base}apple-touch-icon.png`} sizes="180x180" />
+    <link rel="manifest" href={`${base}site.webmanifest`} />
+    <link rel="canonical" href={canonicalUrl} />
+    <link rel="alternate" hreflang="es" href={pageUrl("es")} />
+    <link rel="alternate" hreflang="en" href={pageUrl("en")} />
+    <link rel="alternate" hreflang="x-default" href={pageUrl("both")} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Haoly" />
+    <meta property="og:title" content="Haoly" />
+    <meta property="og:description" content={meta.socialDescription} {...metaToggle("socialDescription")} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={socialImageUrl} />
+    <meta property="og:image:alt" content={meta.ogImageAlt} {...metaToggle("ogImageAlt")} />
     <title>Haoly · 好礼</title>
     <script is:inline data-install-suppression>
       window.addEventListener("beforeinstallprompt", (event) => event.preventDefault());
@@ -216,103 +249,113 @@ const methodMarks = [
     </script>
   </head>
   <body class="lx">
-    <a class="lp-skip" href="#main">{copy.skip}</a>
+    <a class="lp-skip" href="#main"><T locales={locales} text={pick((c) => c.skip)} /></a>
     <header class="lp-header lp-shell">
       <a class="lp-brand" href={base} aria-label="Haoly">
         <img src={`${base}haoly-mark.png`} alt="" width="40" height="40" />
         <span>Haoly <small lang="zh-Hans">好礼</small></span>
       </a>
-      <nav class="lp-nav" aria-label={copy.sections}>
-        <a href="#versus">{copy.nav[0]}</a>
-        <a href="#packs">{copy.nav[1]}</a>
-        <a href="#lei">{copy.nav[2]}</a>
+      <nav class="lp-nav" aria-label={attr((c) => c.sections)}>
+        <a href="#versus"><T locales={locales} text={pick((c) => c.nav[0])} /></a>
+        <a href="#packs"><T locales={locales} text={pick((c) => c.nav[1])} /></a>
+        <a href="#lei"><T locales={locales} text={pick((c) => c.nav[2])} /></a>
       </nav>
       <div class="lp-header-tools">
-        <a class="lx-lang" href={`${base}${other}/`} hreflang={other} lang={other}>{other.toUpperCase()}<span class="sr-only"> · {copy.otherLanguage}</span></a>
-        <a class="lp-button lp-button-small lp-button-ink" href={appUrl}>{copy.openApp} <span aria-hidden="true">↗</span></a>
+        {bilingual ? (
+          <div class="lang-toggle" role="group" aria-label="Idioma / Language">
+            <button type="button" data-set-lang="es" aria-pressed="true">ES</button>
+            <button type="button" data-set-lang="en" aria-pressed="false">EN</button>
+          </div>
+        ) : (
+          (() => {
+            const other: Locale = primary === "en" ? "es" : "en";
+            return <a class="lx-lang" href={`${base}${other}/`} hreflang={other} lang={other}>{other.toUpperCase()}<span class="sr-only"> · {copy[primary].otherLanguage}</span></a>;
+          })()
+        )}
+        {locales.map((target) => <a class:list={["lp-button lp-button-small lp-button-ink", langClass(target)]} href={localeUrl(target)}>{copy[target].openApp} <span aria-hidden="true">↗</span></a>)}
       </div>
     </header>
 
     <main id="main">
       <section class="lp-hero lp-shell" aria-labelledby="hero-title">
         <div class="lp-hero-copy">
-          <p class="lx-kicker">{copy.kicker.map((item) => <span>{item}</span>)}</p>
-          <h1 id="hero-title">{copy.title}<br /><em>{copy.titleEm}</em></h1>
-          <p class="lp-hero-sub">{copy.sub}</p>
+          <p class="lx-kicker">{copy.en.kicker.map((_, index) => <span><T locales={locales} text={pick((c) => c.kicker[index])} /></span>)}</p>
+          <h1 id="hero-title"><T locales={locales} text={pick((c) => c.title)} /><br /><em><T locales={locales} text={pick((c) => c.titleEm)} /></em></h1>
+          <p class="lp-hero-sub"><T locales={locales} text={pick((c) => c.sub)} /></p>
           <div class="lp-actions">
-            <a class="lp-button lp-button-primary" href={appUrl}>{copy.start} <span aria-hidden="true">→</span></a>
-            <a class="lp-text-link" href={conversationUrl}>{copy.chat} <span aria-hidden="true">↗</span></a>
+            {locales.map((target) => <a class:list={["lp-button lp-button-primary", langClass(target)]} href={localeUrl(target)}>{copy[target].start} <span aria-hidden="true">→</span></a>)}
+            {locales.map((target) => <a class:list={["lp-text-link", langClass(target)]} href={conversationUrl(target)}>{copy[target].chat} <span aria-hidden="true">↗</span></a>)}
           </div>
-          <p class="lp-reassurance"><span aria-hidden="true">✓</span> {copy.reassurance}</p>
+          <p class="lp-reassurance"><span aria-hidden="true">✓</span> <T locales={locales} text={pick((c) => c.reassurance)} /></p>
         </div>
         <div class="lp-preview-stage">
           <div class="lp-preview-grid" aria-hidden="true"></div>
           <div class="lp-preview">
-            <div class="lp-preview-header"><span class="lp-preview-brand">Haoly</span><span class="lp-preview-status"><span class="lp-dot" aria-hidden="true"></span>{copy.previewStatus}</span></div>
-            <div class="lp-preview-tabs" aria-hidden="true">{copy.tabs.map((tab, index) => <span class={index === 0 ? "is-active" : undefined}>{tab}</span>)}</div>
-            <div class="lp-demo-meta"><span>{t.directions.toHanzi}</span><span>{demoCard.id}</span></div>
+            <div class="lp-preview-header"><span class="lp-preview-brand">Haoly</span><span class="lp-preview-status"><span class="lp-dot" aria-hidden="true"></span><T locales={locales} text={pick((c) => c.previewStatus)} /></span></div>
+            <div class="lp-preview-tabs" aria-hidden="true">{copy.en.tabs.map((_, index) => <span class={index === 0 ? "is-active" : undefined}><T locales={locales} text={pick((c) => c.tabs[index])} /></span>)}</div>
+            <div class="lp-demo-meta"><span><T locales={locales} text={pick((_, l) => messages[l].directions.toHanzi)} /></span><span>{demoCard.id}</span></div>
             <article class="lp-demo-card">
-              <p class="lp-demo-label">{t.card.promptEyebrow}</p>
-              <p class="lp-demo-prompt">{locale === "en" ? demoCard.ingles : demoCard.espanol}</p>
-              <div class="lp-demo-placeholder" data-demo-placeholder><span class="lp-demo-cell lp-hanzi" lang="zh-Hans" aria-hidden="true"><span class="lp-demo-veil">{demoCard.hanzi}</span></span><ol class="lp-demo-steps">{copy.steps.map((step) => <li>{step}</li>)}</ol></div>
+              <p class="lp-demo-label"><T locales={locales} text={pick((_, l) => messages[l].card.promptEyebrow)} /></p>
+              <p class="lp-demo-prompt"><T locales={locales} text={demoText.prompt} /></p>
+              <div class="lp-demo-placeholder" data-demo-placeholder><span class="lp-demo-cell lp-hanzi" lang="zh-Hans" aria-hidden="true"><span class="lp-demo-veil">{demoCard.hanzi}</span></span><ol class="lp-demo-steps">{copy.en.steps.map((_, index) => <li><T locales={locales} text={pick((c) => c.steps[index])} /></li>)}</ol></div>
               <div class="lp-demo-answer" id="demo-answer" hidden aria-live="polite">
                 <p class="lp-demo-cell lp-hanzi" lang="zh-Hans">{demoCard.hanzi}</p>
                 <p class="lp-demo-pinyin" lang="zh-Latn">{demoCard.pinyin}</p>
-                <p class="lp-demo-explanation">{locale === "en" ? demoCard.explicacion_ingles : demoCard.explicacion}</p>
-                <div class="lp-demo-example"><p class="lp-hanzi" lang="zh-Hans">{demoCard.ejemplo_hanzi}</p><p lang="zh-Latn">{demoCard.ejemplo_pinyin}</p><p>{locale === "en" ? demoCard.ejemplo_ingles : demoCard.ejemplo_espanol}</p></div>
+                <p class="lp-demo-explanation"><T locales={locales} text={demoText.explanation} /></p>
+                <div class="lp-demo-example"><p class="lp-hanzi" lang="zh-Hans">{demoCard.ejemplo_hanzi}</p><p lang="zh-Latn">{demoCard.ejemplo_pinyin}</p><p><T locales={locales} text={demoText.example} /></p></div>
               </div>
               <button class="lp-demo-reveal" type="button" data-demo-reveal disabled aria-expanded="false" aria-controls="demo-answer">
-                <span data-reveal-label>{t.session.reveal}</span>
-                <span data-reset-label hidden>{copy.tryAgain}</span>
+                <span data-reveal-label><T locales={locales} text={pick((_, l) => messages[l].session.reveal)} /></span>
+                <span data-reset-label hidden><T locales={locales} text={pick((c) => c.tryAgain)} /></span>
                 <span aria-hidden="true">↻</span>
               </button>
             </article>
           </div>
-          <p class="lp-preview-caption"><span class="lp-caption-line" aria-hidden="true"></span>{copy.caption}</p>
+          <p class="lp-preview-caption"><span class="lp-caption-line" aria-hidden="true"></span><T locales={locales} text={pick((c) => c.caption)} /></p>
         </div>
       </section>
 
       <div class="lp-facts lp-shell">
-        {[cards.length, packs.length, 0, 0].map((value, index) => <p><strong>{value}</strong><span>{copy.facts[index]}</span></p>)}
+        {[cards.length, packs.length, 0, 0].map((value, index) => <p><strong>{value}</strong><span><T locales={locales} text={pick((c) => c.facts[index])} /></span></p>)}
       </div>
 
       <section class="lx-versus lp-shell lp-section" id="versus" aria-labelledby="versus-title">
         <div class="lp-section-heading">
-          <div><h2 id="versus-title">{copy.versusTitle}<br /><em>{copy.versusTitleEm}</em></h2></div>
-          <p class="lp-section-intro">{copy.versusIntro}</p>
+          <div><h2 id="versus-title"><T locales={locales} text={pick((c) => c.versusTitle)} /><br /><em><T locales={locales} text={pick((c) => c.versusTitleEm)} /></em></h2></div>
+          <p class="lp-section-intro"><T locales={locales} text={pick((c) => c.versusIntro)} /></p>
         </div>
-        <div class="lx-versus-table" role="table" aria-label={copy.versusLabel}>
-          <div class="lx-versus-row lx-versus-head" role="row"><span role="columnheader">{copy.versusHead}</span><span role="columnheader">Haoly</span></div>
-          {copy.versus.map(([them, us]) => (
-            <div class="lx-versus-row" role="row"><span role="cell"><s>{them}</s></span><span role="cell">{us}</span></div>
+        <div class="lx-versus-table" role="table" aria-label={attr((c) => c.versusLabel)}>
+          <div class="lx-versus-row lx-versus-head" role="row"><span role="columnheader"><T locales={locales} text={pick((c) => c.versusHead)} /></span><span role="columnheader">Haoly</span></div>
+          {copy.en.versus.map((_, index) => (
+            <div class="lx-versus-row" role="row"><span role="cell"><s><T locales={locales} text={pick((c) => c.versus[index][0])} /></s></span><span role="cell"><T locales={locales} text={pick((c) => c.versus[index][1])} /></span></div>
           ))}
         </div>
       </section>
 
       <section class="lp-packs lp-shell lp-section" id="packs" aria-labelledby="packs-title">
         <div class="lp-section-heading">
-          <div><h2 id="packs-title">{copy.packsTitle}<br /><em>{copy.packsTitleEm}</em></h2></div>
-          <p class="lp-section-intro">{copy.packsIntro}</p>
+          <div><h2 id="packs-title"><T locales={locales} text={pick((c) => c.packsTitle)} /><br /><em><T locales={locales} text={pick((c) => c.packsTitleEm)} /></em></h2></div>
+          <p class="lp-section-intro"><T locales={locales} text={pick((c) => c.packsIntro)} /></p>
         </div>
         <div class="lp-pack-grid">
           {featuredPacks.map((pack, index) => (
             <article class="lp-pack" data-theme={pack.theme}>
-              <div class="lp-pack-top"><span class="lp-pack-number">{String(packs.indexOf(pack) + 1).padStart(2, "0")}</span><span class="lp-pack-state">{index === 0 ? copy.packOpen : copy.packLocked}</span></div>
+              <div class="lp-pack-top"><span class="lp-pack-number">{String(packs.indexOf(pack) + 1).padStart(2, "0")}</span><span class="lp-pack-state"><T locales={locales} text={pick((c) => (index === 0 ? c.packOpen : c.packLocked))} /></span></div>
               <span class="lp-pack-mark lp-hanzi" lang="zh-Hans">{pack.mark}</span>
-              <h3>{pack.title[locale]}</h3>
-              <p>{pack.description[locale]}</p>
-              <div class="lp-pack-bottom"><span>{cardsInPack(pack.id)} {copy.cardsUnit}</span><span lang="zh-Hans" aria-hidden="true">好礼</span></div>
+              <h3><T locales={locales} text={pick((_, l) => pack.title[l])} /></h3>
+              <p><T locales={locales} text={pick((_, l) => pack.description[l])} /></p>
+              <div class="lp-pack-bottom"><span>{cardsInPack(pack.id)} <T locales={locales} text={pick((c) => c.cardsUnit)} /></span><span lang="zh-Hans" aria-hidden="true">好礼</span></div>
             </article>
           ))}
         </div>
-        <p class="lp-pack-link"><a class="lp-text-link" href={appUrl}>{copy.allPacks(packs.length)} <span aria-hidden="true">→</span></a></p>
+        <p class="lp-pack-link">{locales.map((target) => <a class:list={["lp-text-link", langClass(target)]} href={localeUrl(target)}>{copy[target].allPacks(packs.length)} <span aria-hidden="true">→</span></a>)}</p>
       </section>
 
       <section class="lp-method lp-shell lp-section" aria-labelledby="method-title">
-        <div class="lp-section-heading"><div><h2 id="method-title">{copy.methodTitle}<br /><em>{copy.methodTitleEm}</em></h2></div><p class="lp-section-intro">{copy.methodIntro}</p></div>
+        <div class="lp-section-heading"><div><h2 id="method-title"><T locales={locales} text={pick((c) => c.methodTitle)} /><br /><em><T locales={locales} text={pick((c) => c.methodTitleEm)} /></em></h2></div><p class="lp-section-intro"><T locales={locales} text={pick((c) => c.methodIntro)} /></p></div>
         <div class="lp-method-grid">
-          {copy.method.map(([heading, body], index) => (
-            <article><span class:list={["lp-feature-mark", { "lp-hanzi": methodMarks[index].hanzi }]} lang={methodMarks[index].hanzi ? "zh-Hans" : undefined} aria-hidden="true">{methodMarks[index].mark}</span><h3>{heading}</h3><p>{body}</p></article>
+          {methodMarks.map(({ mark, hanzi }, index) => (
+            <article><span class:list={["lp-feature-mark", { "lp-hanzi": hanzi }]} lang={hanzi ? "zh-Hans" : undefined} aria-hidden="true">{mark}</span><h3><T locales={locales} text={pick((c) => c.method[index][0])} /></h3><p><T locales={locales} text={pick((c) => c.method[index][1])} /></p></article>
           ))}
         </div>
       </section>
@@ -320,36 +363,36 @@ const methodMarks = [
       <section class="lp-lei" id="lei" aria-labelledby="lei-title">
         <div class="lp-shell lp-lei-inner">
           <div class="lp-lei-copy">
-            <h2 id="lei-title">{copy.leiTitle}<br /><em>{copy.leiTitleEm}</em></h2>
-            <p>{copy.leiIntro}</p>
+            <h2 id="lei-title"><T locales={locales} text={pick((c) => c.leiTitle)} /><br /><em><T locales={locales} text={pick((c) => c.leiTitleEm)} /></em></h2>
+            <p><T locales={locales} text={pick((c) => c.leiIntro)} /></p>
             <ul class="lp-lei-features">
-              {copy.leiFeatures.map((feature) => <li><span aria-hidden="true">↳</span><span>{feature}</span></li>)}
+              {copy.en.leiFeatures.map((_, index) => <li><span aria-hidden="true">↳</span><span><T locales={locales} text={pick((c) => c.leiFeatures[index])} /></span></li>)}
             </ul>
-            <a class="lp-button lp-button-light" href={conversationUrl}>{copy.leiTry} <span aria-hidden="true">↗</span></a>
-            <p class="lp-lei-note">{copy.leiNote}</p>
+            {locales.map((target) => <a class:list={["lp-button lp-button-light", langClass(target)]} href={conversationUrl(target)}>{copy[target].leiTry} <span aria-hidden="true">↗</span></a>)}
+            <p class="lp-lei-note"><T locales={locales} text={pick((c) => c.leiNote)} /></p>
           </div>
           <figure class="lp-chat-example">
-            <figcaption><span class="lp-chat-seal lp-hanzi" lang="zh-Hans" aria-hidden="true">雷</span><span><strong>Léi</strong><small>{copy.chatPartner}</small></span><span class="lp-example-label">{copy.chatExample}</span></figcaption>
-            <div class="lp-chat-line"><span class="lp-speaker">Léi</span><p class="lp-hanzi" lang="zh-Hans">你喜欢喝茶吗？</p><details class="lp-chat-help"><summary>{copy.chatHelp}</summary><p class="lp-ruby lp-hanzi" lang="zh-Hans"><ruby>你<rt>nǐ</rt></ruby><ruby>喜<rt>xǐ</rt></ruby><ruby>欢<rt>huān</rt></ruby><ruby>喝<rt>hē</rt></ruby><ruby>茶<rt>chá</rt></ruby><ruby>吗<rt>ma</rt></ruby>？</p><p>{copy.chatQ1}</p></details></div>
-            <div class="lp-chat-answer"><span class="lp-speaker">{copy.chatYou}</span><p class="lp-hanzi" lang="zh-Hans">我喝喜欢茶。</p><details class="lp-naturalness"><summary>{copy.chatNeedsWork}<span aria-hidden="true">⌄</span></summary><p>{copy.chatFix}</p><p class="lp-hanzi" lang="zh-Hans">我喜欢喝茶。</p></details></div>
-            <div class="lp-chat-line"><span class="lp-speaker">Léi</span><p class="lp-hanzi" lang="zh-Hans">你喜欢喝什么茶？</p><p class="lp-chat-translation">{copy.chatQ2}</p></div>
-            <div class="lp-chat-question"><span aria-hidden="true">?</span><p>{copy.chatGrammar}</p></div>
+            <figcaption><span class="lp-chat-seal lp-hanzi" lang="zh-Hans" aria-hidden="true">雷</span><span><strong>Léi</strong><small><T locales={locales} text={pick((c) => c.chatPartner)} /></small></span><span class="lp-example-label"><T locales={locales} text={pick((c) => c.chatExample)} /></span></figcaption>
+            <div class="lp-chat-line"><span class="lp-speaker">Léi</span><p class="lp-hanzi" lang="zh-Hans">你喜欢喝茶吗？</p><details class="lp-chat-help"><summary><T locales={locales} text={pick((c) => c.chatHelp)} /></summary><p class="lp-ruby lp-hanzi" lang="zh-Hans"><ruby>你<rt>nǐ</rt></ruby><ruby>喜<rt>xǐ</rt></ruby><ruby>欢<rt>huān</rt></ruby><ruby>喝<rt>hē</rt></ruby><ruby>茶<rt>chá</rt></ruby><ruby>吗<rt>ma</rt></ruby>？</p><p><T locales={locales} text={pick((c) => c.chatQ1)} /></p></details></div>
+            <div class="lp-chat-answer"><span class="lp-speaker"><T locales={locales} text={pick((c) => c.chatYou)} /></span><p class="lp-hanzi" lang="zh-Hans">我喝喜欢茶。</p><details class="lp-naturalness"><summary><T locales={locales} text={pick((c) => c.chatNeedsWork)} /><span aria-hidden="true">⌄</span></summary><p><T locales={locales} text={pick((c) => c.chatFix)} /></p><p class="lp-hanzi" lang="zh-Hans">我喜欢喝茶。</p></details></div>
+            <div class="lp-chat-line"><span class="lp-speaker">Léi</span><p class="lp-hanzi" lang="zh-Hans">你喜欢喝什么茶？</p><p class="lp-chat-translation"><T locales={locales} text={pick((c) => c.chatQ2)} /></p></div>
+            <div class="lp-chat-question"><span aria-hidden="true">?</span><p><T locales={locales} text={pick((c) => c.chatGrammar)} /></p></div>
           </figure>
         </div>
       </section>
 
       <section class="lp-practical lp-shell lp-section" aria-labelledby="practical-title">
-        <div><h2 id="practical-title">{copy.freeTitle}<br /><em>{copy.freeTitleEm}</em></h2><p class="lp-practical-benefit">{copy.freeIntro}</p></div>
+        <div><h2 id="practical-title"><T locales={locales} text={pick((c) => c.freeTitle)} /><br /><em><T locales={locales} text={pick((c) => c.freeTitleEm)} /></em></h2><p class="lp-practical-benefit"><T locales={locales} text={pick((c) => c.freeIntro)} /></p></div>
         <div class="lp-faq">
-          {copy.faq.map(([question, answer], index) => (
-            <details open={index === 1}><summary>{question}<span aria-hidden="true">+</span></summary><p>{answer}</p></details>
+          {copy.en.faq.map((_, index) => (
+            <details open={index === 1}><summary><T locales={locales} text={pick((c) => c.faq[index][0])} /><span aria-hidden="true">+</span></summary><p><T locales={locales} text={pick((c) => c.faq[index][1])} /></p></details>
           ))}
         </div>
       </section>
 
-      <section class="lp-closing lp-shell" aria-labelledby="closing-title"><span class="lp-closing-mark lp-hanzi" lang="zh-Hans" aria-hidden="true">学</span><div><h2 id="closing-title">{copy.closingTitle}<br /><em>{copy.closingTitleEm}</em></h2><p class="lp-closing-note">{copy.closingNote}</p></div><a class="lp-button lp-button-primary" href={appUrl}>{copy.openHaoly} <span aria-hidden="true">→</span></a></section>
+      <section class="lp-closing lp-shell" aria-labelledby="closing-title"><span class="lp-closing-mark lp-hanzi" lang="zh-Hans" aria-hidden="true">学</span><div><h2 id="closing-title"><T locales={locales} text={pick((c) => c.closingTitle)} /><br /><em><T locales={locales} text={pick((c) => c.closingTitleEm)} /></em></h2><p class="lp-closing-note"><T locales={locales} text={pick((c) => c.closingNote)} /></p></div>{locales.map((target) => <a class:list={["lp-button lp-button-primary", langClass(target)]} href={localeUrl(target)}>{copy[target].openHaoly} <span aria-hidden="true">→</span></a>)}</section>
     </main>
-    <footer class="lp-footer lp-shell"><a class="lp-brand" href={base}>Haoly <small lang="zh-Hans">好礼</small></a><p>{copy.createdBy} <a href="https://janbalanya.com/">Jan Balanyà Scholl</a></p><a href="#main">{copy.backToTop} ↑</a></footer>
-    <noscript><p class="lp-noscript">{copy.noscript} <a href={appUrl}>{copy.openApp}</a></p></noscript>
+    <footer class="lp-footer lp-shell"><a class="lp-brand" href={base}>Haoly <small lang="zh-Hans">好礼</small></a><p><T locales={locales} text={pick((c) => c.createdBy)} /> <a href="https://janbalanya.com/">Jan Balanyà Scholl</a></p><a href="#main"><T locales={locales} text={pick((c) => c.backToTop)} /> ↑</a></footer>
+    <noscript><p class="lp-noscript"><T locales={locales} text={pick((c) => c.noscript)} /> {locales.map((target) => <a href={localeUrl(target)} lang={target}>{copy[target].openApp}</a>)}</p></noscript>
   </body>
 </html>

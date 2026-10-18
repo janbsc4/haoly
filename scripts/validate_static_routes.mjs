@@ -165,6 +165,32 @@ export function validateLandingRouteHtml(html) {
   }
 }
 
+/** /es/ and /en/ are the landing in one language, for sharing a link in that language. */
+export function validateLocalizedLandingRouteHtml(html, locale) {
+  const { site, base } = siteAndBase();
+  const route = `${base}${locale}/`;
+  const document = new JSDOM(html).window.document;
+  if (document.documentElement.lang !== locale) {
+    throw new Error(`${route} tiene html[lang] = ${document.documentElement.lang}; se esperaba ${locale}.`);
+  }
+  requireAttribute(document, 'link[rel="canonical"]', "href", `${site}${route}`, route);
+  requireAttribute(document, 'meta[property="og:url"]', "content", `${site}${route}`, route);
+  requireAttribute(document, 'link[rel="alternate"][hreflang="x-default"]', "href", `${site}${base}`, route);
+  for (const alternate of Object.keys(expectedMetadata)) {
+    requireAttribute(document, `link[rel="alternate"][hreflang="${alternate}"]`, "href", `${site}${base}${alternate}/`, route);
+  }
+  if (document.querySelector('meta[name="robots"][content*="noindex"]')) {
+    throw new Error(`${route} no debe llevar noindex: es una página para compartir.`);
+  }
+  const appLinks = [...document.querySelectorAll(`a[href^="${base}${APP_SEGMENT}/"]`)]
+    .map((anchor) => new URL(anchor.getAttribute("href"), site).pathname);
+  const expected = `${base}${APP_SEGMENT}/${locale}/`;
+  const foreign = appLinks.filter((path) => !path.startsWith(expected));
+  if (!appLinks.includes(expected) || foreign.length > 0) {
+    throw new Error(`${route} debe enlazar solo a la app en ${locale} (${expected}); enlaza a ${appLinks.join(", ")}.`);
+  }
+}
+
 export function validateAppEntryRouteHtml(html, segment = APP_SEGMENT) {
   const { site, base } = siteAndBase();
   const route = `${base}${segment}/`;
@@ -236,6 +262,12 @@ export async function validateStaticRoutes(distDirectory = resolve("dist")) {
 
   const rootHtml = await readFile(resolve(distDirectory, "index.html"), "utf8");
   validateLandingRouteHtml(rootHtml);
+  await Promise.all(
+    Object.keys(expectedMetadata).map(async (locale) => {
+      const html = await readFile(resolve(distDirectory, locale, "index.html"), "utf8");
+      validateLocalizedLandingRouteHtml(html, locale);
+    }),
+  );
   const appEntryHtml = await readFile(resolve(distDirectory, APP_SEGMENT, "index.html"), "utf8");
   validateAppEntryRouteHtml(appEntryHtml);
   const legacyEntryHtml = await readFile(
@@ -288,5 +320,5 @@ export async function validateStaticRoutes(distDirectory = resolve("dist")) {
 const invokedPath = process.argv[1] ? pathToFileURL(resolve(process.argv[1])).href : "";
 if (import.meta.url === invokedPath) {
   await validateStaticRoutes();
-  console.log("Rutas estáticas validadas: landing raíz, entrada de app, app localizada y redirecciones desde /app/.");
+  console.log("Rutas estáticas validadas: landing raíz, landings /es/ y /en/, entrada de app, app localizada y redirecciones desde /app/.");
 }

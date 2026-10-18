@@ -21,8 +21,8 @@
 
 /* Hero: bigger, tighter, and one loud line in cinnabar. */
 .lx-kicker { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 26px; padding: 0; }
-.lx-kicker span { padding: 5px 12px 5px 10px; border: var(--lx-line); border-radius: 999px; background: var(--surface); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
-.lx-kicker span::before { content: "✕"; margin-right: 7px; color: var(--cinnabar); }
+.lx-kicker > span { padding: 5px 12px 5px 10px; border: var(--lx-line); border-radius: 999px; background: var(--surface); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.lx-kicker > span::before { content: "✕"; margin-right: 7px; color: var(--cinnabar); }
 .lx .lp-hero { padding-block: 32px 96px; }
 .lx .lp-hero h1 { font-size: clamp(3.2rem, 7.4vw, 6.4rem); line-height: 0.94; margin-bottom: 30px; }
 .lx .lp-hero h1 em { color: var(--cinnabar); }
