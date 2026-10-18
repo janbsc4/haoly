@@ -857,6 +857,26 @@ export default function FlashcardApp({
                     >
                       {m.help.trigger}
                     </button>
+                    {SUPPORTED_LOCALES.length > 1 ? (
+                      <div className="account-menu-locale" role="group" aria-label={m.localeSwitcher.aria}>
+                        <span aria-hidden="true">{m.localeSwitcher.aria}</span>
+                        <div className="locale-switcher">
+                          {SUPPORTED_LOCALES.map((option) => (
+                            <button
+                              key={option}
+                              type="button"
+                              role="menuitemradio"
+                              className={option === locale ? "is-active" : ""}
+                              aria-checked={option === locale}
+                              aria-label={m.localeSwitcher.name[option]}
+                              onClick={() => changeLocale(option)}
+                            >
+                              {m.localeSwitcher.label[option]}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    ) : null}
                     {user ? (<>
                       <button
                         type="button"
@@ -893,25 +913,6 @@ export default function FlashcardApp({
               <span className="avatar-skeleton skeleton" />
             </div>
           )}
-          {SUPPORTED_LOCALES.length > 1 ? (
-            <div
-              className="locale-switcher"
-              role="group"
-              aria-label={m.localeSwitcher.aria}
-            >
-              {SUPPORTED_LOCALES.map((option) => (
-                <button
-                  key={option}
-                  type="button"
-                  className={option === locale ? "is-active" : ""}
-                  aria-pressed={option === locale}
-                  onClick={() => changeLocale(option)}
-                >
-                  {m.localeSwitcher.label[option]}
-                </button>
-              ))}
-            </div>
-          ) : null}
         </div>
       </header>
 

@@ -238,6 +238,38 @@ a {
   color: var(--jade);
 }
 
+/* Language row: label left, the compact ES/EN switch right. */
+.account-menu-locale {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 44px;
+  margin-top: 4px;
+  padding-left: 10px;
+}
+
+.account-menu-locale > span {
+  color: var(--ink);
+  font-size: inherit;
+  font-weight: 500;
+}
+
+.account-menu .locale-switcher button {
+  min-height: 34px;
+  margin: 0;
+  padding: 5px 9px;
+  color: var(--muted);
+  font-weight: 700;
+  text-align: center;
+}
+
+.account-menu .locale-switcher button:hover,
+.account-menu .locale-switcher button.is-active {
+  background: var(--surface);
+  color: var(--ink);
+}
+
 .view-tabs {
   display: flex;
   gap: 3px;

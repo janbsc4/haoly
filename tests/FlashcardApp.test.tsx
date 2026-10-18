@@ -1285,7 +1285,8 @@ describe("FlashcardApp localization", () => {
     expect(screen.getByText("Un saludo básico.")).toBeInTheDocument();
     expect(screen.getAllByText(/Carta 1 de 2/).length).toBeGreaterThan(0);
 
-    await user.click(screen.getByRole("button", { name: "EN" }));
+    await user.click(screen.getByRole("button", { name: "Abrir menú de cuenta" }));
+    await user.click(screen.getByRole("menuitemradio", { name: "English" }));
 
     expect(await screen.findByText("A basic greeting.")).toBeInTheDocument();
     expect(screen.queryByText("Un saludo básico.")).not.toBeInTheDocument();
@@ -1297,8 +1298,8 @@ describe("FlashcardApp localization", () => {
     expect(window.location.pathname).toBe("/study/en/");
     expect(document.documentElement.lang).toBe("en");
     expect(window.localStorage.getItem("yuwenke:locale:v1")).toBe("en");
-    expect(screen.getByRole("button", { name: "EN" })).toHaveAttribute(
-      "aria-pressed",
+    expect(screen.getByRole("menuitemradio", { name: "English" })).toHaveAttribute(
+      "aria-checked",
       "true",
     );
   });
@@ -1307,7 +1308,8 @@ describe("FlashcardApp localization", () => {
     const user = userEvent.setup();
     renderLocalizedApp([bilingualCard], "es");
 
-    await user.click(await screen.findByRole("button", { name: "EN" }));
+    await user.click(await screen.findByRole("button", { name: "Abrir menú de cuenta" }));
+    await user.click(screen.getByRole("menuitemradio", { name: "English" }));
     expect(await screen.findByRole("button", { name: "Search" })).toBeInTheDocument();
     expect(screen.queryByRole("searchbox")).not.toBeInTheDocument();
 

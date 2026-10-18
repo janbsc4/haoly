@@ -53,6 +53,8 @@ export interface Messages {
   localeSwitcher: {
     aria: string;
     label: Record<Locale, string>;
+    // Each language's own name, so it is recognizable whatever the current locale.
+    name: Record<Locale, string>;
   };
   sync: {
     syncing: string;
@@ -241,6 +243,7 @@ const es: Messages = {
   localeSwitcher: {
     aria: "Idioma",
     label: { es: "ES", en: "EN" },
+    name: { es: "Español", en: "English" },
   },
   sync: {
     syncing: "Sincronizando…",
@@ -563,6 +566,7 @@ const en: Messages = {
   localeSwitcher: {
     aria: "Language",
     label: { es: "ES", en: "EN" },
+    name: { es: "Español", en: "English" },
   },
   sync: {
     syncing: "Syncing…",
