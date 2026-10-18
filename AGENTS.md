@@ -18,7 +18,7 @@ Firestore stores learner state (progress, favorites, Open Packs, Reset Boundary)
 * Léi chat UI: `src/components/Conversation.tsx` + `src/styles/conversation.css`; client and saved sessions: `src/lib/chatClient.ts`, `src/lib/conversation.ts`; request/reply schemas shared with the Worker: `shared/chat.ts`; backend: `worker/`.
 * The local preview has no Léi backend. To see chat bubbles, write a saved session (shape in `src/lib/conversation.ts`) to localStorage key `yuwenke:conversation:v1:guest:<locale>` and reload.
 * Styles: color and font tokens in `src/styles/brand.css`; app styles in `src/styles/global.css` (late rules near the end override earlier ones for the same selector).
-* Landing page: `src/components/NoBsLanding.astro`, rendered by `src/pages/index.astro` (`locale="both"`) and `src/pages/{es,en}/index.astro`; styles only in `src/styles/landing.css`.
+* Landing page: `src/components/NoBsLanding.astro`, rendered by `src/pages/index.astro` (`locale="both"`), `src/pages/es/index.astro`, and `src/pages/en/index.astro`; styles only in `src/styles/landing.css`.
 * UI copy per locale: `src/lib/messages.ts`, `src/lib/chatMessages.ts`.
 
 ## Card identity and packs
