@@ -16,6 +16,7 @@ interface StudyCardProps {
   onSkip?: () => void;
   onToggleFavorite: () => void;
   promptRef: RefObject<HTMLHeadingElement | null>;
+  cardRef: RefObject<HTMLElement | null>;
   m: Messages;
   locale: Locale;
 }
@@ -42,7 +43,7 @@ export function HighlightedText({ text, properNames }: HighlightedTextProps) {
 }
 
 export const StudyCard = forwardRef<HTMLElement, StudyCardProps>(function StudyCard(
-  { unit, packTitle, revealed, favorite, muted, onSkip, onToggleFavorite, promptRef, m, locale },
+  { unit, packTitle, revealed, favorite, muted, onSkip, onToggleFavorite, promptRef, cardRef, m, locale },
   answerRef,
 ) {
   const { card, direction } = unit;
@@ -69,7 +70,7 @@ export const StudyCard = forwardRef<HTMLElement, StudyCardProps>(function StudyC
   }, [revealed, unit.key]);
 
   return (
-    <article className={`study-card ${revealed ? "is-revealed" : ""}`}>
+    <article className={`study-card ${revealed ? "is-revealed" : ""}`} ref={cardRef}>
       {onSkip ? (
         <button type="button" className="skip-button card-skip" onClick={onSkip}>
           {m.session.skip} <kbd>3</kbd>

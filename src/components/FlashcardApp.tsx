@@ -40,6 +40,7 @@ import {
   localized,
   parseLocaleFromPath,
 } from "../lib/locale";
+import { cardScrollDelta } from "../lib/cardScroll";
 import { applyLocaleMetadata } from "../lib/documentMetadata";
 import { messages, topicDisplayLabel, type Messages } from "../lib/messages";
 import {
@@ -204,6 +205,9 @@ export default function FlashcardApp({
   const searchButtonRef = useRef<HTMLButtonElement>(null);
   const promptRef = useRef<HTMLHeadingElement>(null);
   const answerRef = useRef<HTMLElement>(null);
+  const cardRef = useRef<HTMLElement>(null);
+  const decisionAreaRef = useRef<HTMLDivElement>(null);
+  const cardScrollArmedRef = useRef(false);
   const accountButtonRef = useRef<HTMLButtonElement>(null);
   const accountMenuRef = useRef<HTMLDivElement>(null);
   const studyProgress = useMemo(
@@ -402,6 +406,37 @@ export default function FlashcardApp({
     // jumping while the prompt is still compacting above it.
     if (revealed) answerRef.current?.focus({ preventScroll: true });
   }, [revealed]);
+
+  const currentKey = current?.key;
+  useEffect(() => {
+    const card = cardRef.current;
+    if (!card) return;
+    // The first card renders where the page starts; only later reveals and cards scroll.
+    if (!cardScrollArmedRef.current) {
+      cardScrollArmedRef.current = true;
+      return;
+    }
+    let cancelled = false;
+    // Measure once the prompt has finished gliding, so the card has its final height.
+    const glides = card.getAnimations?.({ subtree: true }) ?? [];
+    Promise.all(glides.map((animation) => animation.finished))
+      .then(() => {
+        if (cancelled) return;
+        const decisionTop = decisionAreaRef.current?.getBoundingClientRect().top ?? Infinity;
+        const delta = cardScrollDelta(
+          card.getBoundingClientRect(),
+          Math.min(window.innerHeight, decisionTop),
+        );
+        if (delta === 0) return;
+        const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+        window.scrollBy({ top: delta, behavior: reduceMotion ? "auto" : "smooth" });
+      })
+      // A glide cancelled by the next card is fine; that card schedules its own scroll.
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [revealed, currentKey]);
 
   useEffect(() => {
     if (!notice) return;
@@ -1014,12 +1049,13 @@ export default function FlashcardApp({
                   setFavorite(current.cardId, !currentFavorite)
                 }
                 promptRef={promptRef}
+                cardRef={cardRef}
                 ref={answerRef}
                 m={m}
                 locale={locale}
               />
 
-              <div className="decision-area">
+              <div className="decision-area" ref={decisionAreaRef}>
                 {!revealed ? (
                   <button type="button" className="button button-primary reveal-button" aria-keyshortcuts="Space" onClick={() => setRevealed(true)}>
                     {m.session.reveal} <kbd>{m.session.spaceKey}</kbd>

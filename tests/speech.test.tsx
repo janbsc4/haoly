@@ -286,6 +286,7 @@ describe("StudyCard pronunciation", () => {
         muted={muted}
         onToggleFavorite={() => {}}
         promptRef={{ current: null }}
+        cardRef={{ current: null }}
         m={messages.es}
         locale="es"
       />,

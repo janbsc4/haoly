@@ -56,6 +56,9 @@ if (typeof window !== "undefined") {
   });
 }
 
+// jsdom has no layout, so the study app's scroll-to-card is a no-op here.
+if (typeof window !== "undefined") window.scrollBy = () => {};
+
 afterEach(() => {
   cleanup();
   if (typeof window !== "undefined") window.localStorage?.clear();

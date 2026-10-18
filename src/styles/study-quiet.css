@@ -1,0 +1,55 @@
+/* Quiet chrome: controls recede so the card carries the page. Loaded after global.css;
+   the .app-shell prefix outranks its rules for the same selector. Colors and fonts stay
+   in brand.css. */
+
+/* Header and tabs */
+.app-shell .site-header { border-bottom-color: transparent; background: var(--paper); }
+/* The tab bar already names the view, so the page heading only pushed the card down. */
+.app-shell .study-heading { display: none; }
+.app-shell .study-controls { margin-top: 0; }
+@media (min-width: 960px) {
+  .app-shell .view-tabs { border: 0; background: transparent; box-shadow: none; }
+  .app-shell .view-tabs button { color: var(--muted); font-weight: 500; }
+  .app-shell .view-tabs button.is-active { background: var(--surface-warm); color: var(--ink); font-weight: 600; box-shadow: none; }
+  .app-shell .view-tabs .is-active .count-pill { background: transparent; color: var(--muted); }
+}
+@media (max-width: 959px) {
+  .app-shell .view-tabs { border-top: 1px solid var(--border); background: var(--paper); }
+  .app-shell .view-tabs button { color: var(--muted); }
+  .app-shell .view-tabs button.is-active { color: var(--ink); font-weight: 600; }
+  .app-shell .view-tabs button.is-active::after { height: 2px; background: var(--ink); }
+  .app-shell .view-tabs .count-pill,
+  .app-shell .view-tabs .is-active .count-pill { border: 0; background: transparent; color: var(--muted); }
+  /* Fade the card out under the floating actions instead of drawing a rule. */
+  .app-shell .decision-area { border-top: 0; background: linear-gradient(to bottom, transparent, var(--paper) 28%); }
+  /* With less chrome above it, the unrevealed card takes the room it freed. */
+  .app-shell .study-card:not(.is-revealed) .card-prompt { min-height: clamp(280px, 52vh, 480px); }
+}
+
+/* Toolbar: text buttons, no outlines. */
+.app-shell .study-toolbar { margin-bottom: 4px; }
+.app-shell .study-toolbar .button { min-height: 44px; padding-inline: 10px; border: 0; background: transparent; color: var(--muted); font-weight: 500; }
+.app-shell .study-toolbar .button:hover { background: var(--surface-warm); color: var(--ink); }
+.app-shell .study-toolbar .pack-trigger { color: var(--ink); font-weight: 600; }
+
+/* Progress: a hairline, not a bar. */
+.app-shell .session-progress > div:first-child { color: var(--muted); font-weight: 500; }
+.app-shell .direction-badge { color: var(--muted); }
+.app-shell .progress-track { height: 3px; border: 0; background: var(--border); }
+.app-shell .progress-track span { background: var(--ink); }
+
+/* Card: one soft surface. */
+.app-shell .study-card { border-radius: 22px; box-shadow: 0 1px 2px rgba(60, 40, 10, 0.04), 0 12px 32px rgba(60, 40, 10, 0.06); }
+.app-shell .skip-button { border: 0; background: transparent; color: var(--muted); font-weight: 500; }
+.app-shell .skip-button:hover { background: var(--surface-warm); color: var(--ink); }
+.app-shell .skip-button kbd { opacity: 0.6; }
+.app-shell .favorite-button { border: 0; background: transparent; color: var(--muted); }
+.app-shell .favorite-button:hover { background: var(--surface-warm); }
+.app-shell .study-card .eyebrow { color: var(--muted); font-weight: 500; letter-spacing: 0.1em; }
+.app-shell .prompt-spanish, .app-shell .answer-spanish { font-weight: 600; letter-spacing: -0.035em; }
+.app-shell .speak-button { border: 0; background: var(--jade-soft); color: var(--jade); }
+.app-shell .example-block { border: 0; background: var(--surface-warm); }
+
+/* Decisions: one filled action, one quiet one. */
+.app-shell .decision-area .button { font-weight: 600; }
+.app-shell .decision-area .button-primary { border-color: transparent; }
