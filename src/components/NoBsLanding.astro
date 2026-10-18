@@ -108,8 +108,8 @@ const copy = {
       ["Where are my conversations saved?", "The latest twelve exchanges stay in your browser, separated by account and language. During chat, bounded history and vocabulary are sent to the AI service; transcripts aren’t stored in Firestore or Haoly’s backend."],
     ],
     closingTitle: "Your streak doesn’t speak Chinese.",
-    closingTitleEm: "You could.",
-    closingNote: "Learn one word today. Close the app. That counts.",
+    closingTitleEm: "You will, soon enough.",
+    closingNote: "One word today beats any streak.",
     openHaoly: "Open Haoly",
     createdBy: "Created by",
     backToTop: "Back to top",
@@ -147,7 +147,8 @@ const copy = {
       ["Una prueba gratuita que acaba en suscripción", "Gratis, sin suscripción y sin pedirte la tarjeta."],
     ],
     packsTitle: "Palabras que vas a usar de verdad.",
-    packsTitleEm: "Nada de «el oso bebe cerveza».",
+    // Narrow no-break spaces keep the guillemets off the letters under the headline's tight tracking.
+    packsTitleEm: "Nada de «\u202Fel oso bebe cerveza\u202F».",
     packsIntro: "Cada carta sale de clases reales de mandarín: pedir en un bar, la familia, hablar de cualquier cosa, la gramática en la que se atasca todo el mundo. El primer pack ya lo tienes abierto. Abre el siguiente cuando te apetezca, no cuando lo decida un algoritmo.",
     packOpen: "Abierto",
     packLocked: "Por desbloquear",
@@ -161,7 +162,7 @@ const copy = {
       ["Tus cartas, tus reglas", "Lo que ya te sabes, a Dominadas. Lo que se te resiste, con estrella. Y si buscas una carta concreta, busca y filtra."],
       ["Escúchalo. Dilo.", "Pinyin en todas las cartas y pronunciación con las voces en chino de tu dispositivo. O estudia en silencio en el autobús."],
     ],
-    leiTitle: "El tipo test es hacerse trampas.",
+    leiTitle: "Elegir entre cuatro no es hablar chino.",
     leiTitleEm: "Con Léi, te toca escribir.",
     leiIntro: "Pide un té. Habla de tu familia. Cuenta lo que te gusta. Léi, tu compañero de conversación con IA, te pregunta en chino y tú contestas con tus propias frases, usando las palabras que estás aprendiendo. Y si te equivocas, te explica por qué.",
     leiFeatures: ["Conversaciones cortas, sobre el tema que elijas.", "Pinyin, traducción y una posible respuesta cuando te atasques.", "Correcciones sin rodeos, explicadas en español."],
@@ -390,7 +391,7 @@ const metaToggle = (key: "description" | "socialDescription" | "ogImageAlt") =>
         </div>
       </section>
 
-      <section class="lp-closing lp-shell" aria-labelledby="closing-title"><span class="lp-closing-mark lp-hanzi" lang="zh-Hans" aria-hidden="true">学</span><div><h2 id="closing-title"><T locales={locales} text={pick((c) => c.closingTitle)} /><br /><em><T locales={locales} text={pick((c) => c.closingTitleEm)} /></em></h2><p class="lp-closing-note"><T locales={locales} text={pick((c) => c.closingNote)} /></p></div>{locales.map((target) => <a class:list={["lp-button lp-button-primary", langClass(target)]} href={localeUrl(target)}>{copy[target].openHaoly} <span aria-hidden="true">→</span></a>)}</section>
+      <section class="lp-closing lp-shell" aria-labelledby="closing-title"><div><h2 id="closing-title"><T locales={locales} text={pick((c) => c.closingTitle)} /><br /><em><T locales={locales} text={pick((c) => c.closingTitleEm)} /></em></h2><p class="lp-closing-note"><T locales={locales} text={pick((c) => c.closingNote)} /></p></div>{locales.map((target) => <a class:list={["lp-button lp-button-primary", langClass(target)]} href={localeUrl(target)}>{copy[target].openHaoly} <span aria-hidden="true">→</span></a>)}</section>
     </main>
     <footer class="lp-footer lp-shell"><a class="lp-brand" href={base}>Haoly <small lang="zh-Hans">好礼</small></a><p><T locales={locales} text={pick((c) => c.createdBy)} /> <a href="https://janbalanya.com/">Jan Balanyà Scholl</a></p><a href="#main"><T locales={locales} text={pick((c) => c.backToTop)} /> ↑</a></footer>
     <noscript><p class="lp-noscript"><T locales={locales} text={pick((c) => c.noscript)} /> {locales.map((target) => <a href={localeUrl(target)} lang={target}>{copy[target].openApp}</a>)}</p></noscript>

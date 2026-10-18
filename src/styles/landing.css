@@ -184,7 +184,6 @@ p { margin-top: 0; text-wrap: pretty; }
 .lp-closing { position: relative; display: flex; flex-direction: column; align-items: center; gap: 28px; overflow: hidden; padding: 80px 32px; border-radius: 32px; background: var(--ink); color: var(--surface); text-align: center; }
 .lp-closing::before { position: absolute; inset: 0; background-image: linear-gradient(color-mix(in srgb, var(--surface), transparent 92%) 1px, transparent 1px), linear-gradient(90deg, color-mix(in srgb, var(--surface), transparent 92%) 1px, transparent 1px); background-position: center; background-size: 72px 72px; content: ""; mask-image: radial-gradient(closest-side, #000 20%, transparent); }
 .lp-closing > * { position: relative; }
-.lp-closing-mark { display: grid; flex: none; place-items: center; width: 76px; height: 82px; border: 2px solid var(--cinnabar-soft); border-radius: 8px; color: var(--cinnabar-soft); font-size: 3rem; transform: rotate(-6deg); }
 .lp-closing h2 { margin: 0; font-size: clamp(2rem, 4.2vw, 3.2rem); }
 .lp-closing-note { margin: 14px 0 0; color: var(--border-dark); font-size: 1.1rem; }
 .lp-closing .lp-button { min-height: 54px; padding-inline: 28px; box-shadow: none; }
@@ -241,7 +240,6 @@ p { margin-top: 0; text-wrap: pretty; }
   .lp-chat-example { width: min(460px, 100%); justify-self: center; }
   .lp-practical { grid-template-columns: 1fr; gap: 32px; }
   .lp-closing { padding: 56px 24px; gap: 22px; border-radius: 26px; }
-  .lp-closing-mark { width: 60px; height: 64px; font-size: 2.3rem; }
 }
 @media (max-width: 440px) {
   .lp-shell { width: calc(100% - 32px); }

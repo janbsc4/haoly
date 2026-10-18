@@ -20,6 +20,26 @@
   .app-shell .view-tabs button.is-active::after { height: 2px; background: var(--ink); }
   .app-shell .view-tabs .count-pill,
   .app-shell .view-tabs .is-active .count-pill { border: 0; background: transparent; color: var(--muted); }
+  /* Every tab stacks a centered icon over its label; the count rides beside the icon as a
+     superscript so it never pushes the icon off its label's axis. */
+  .app-shell .view-tabs button { grid-template-columns: 1fr; justify-items: center; gap: 4px; font-weight: 500; }
+  .app-shell .view-tabs .app-icon,
+  .app-shell .view-tabs button:has(.count-pill) .app-icon { grid-area: 1 / 1; }
+  .app-shell .view-tabs button > span:not(.count-pill) { grid-area: 2 / 1; }
+  .app-shell .view-tabs .count-pill {
+    grid-area: 1 / 1;
+    align-self: start;
+    min-width: 0;
+    padding: 0;
+    font-size: 0.625rem;
+    font-weight: 600;
+    line-height: 1;
+    /* Center on the icon, then shift so the count's left edge clears the icon's right edge. */
+    transform: translate(calc(50% + 14px), -2px);
+  }
+  .app-shell .view-tabs .is-active .count-pill { color: var(--ink); }
+  /* The active marker sits on the bar's top rule, like a tab pulled forward. */
+  .app-shell .view-tabs button.is-active::after { top: -7px; width: 28px; left: calc(50% - 14px); }
   /* Fade the card out under the floating actions instead of drawing a rule. */
   .app-shell .decision-area { border-top: 0; background: linear-gradient(to bottom, transparent, var(--paper) 28%); }
   /* With less chrome above it, the unrevealed card takes the room it freed. */
@@ -39,7 +59,10 @@
 .app-shell .progress-track span { background: var(--ink); }
 
 /* Card: one soft surface. */
-.app-shell .study-card { border-radius: 22px; box-shadow: 0 1px 2px rgba(60, 40, 10, 0.04), 0 12px 32px rgba(60, 40, 10, 0.06); }
+.app-shell .study-card { border-radius: 22px; }
+/* No shadows on the surfaces that morph between views: the morph clips its snapshots, so a
+   shadow would vanish mid-animation, and redrawing one on the resizing group costs smoothness. */
+.app-shell :is(.study-card, .summary-card, .empty-state, .conversation) { box-shadow: none; }
 .app-shell .skip-button { border: 0; background: transparent; color: var(--muted); font-weight: 500; }
 .app-shell .skip-button:hover { background: var(--surface-warm); color: var(--ink); }
 .app-shell .skip-button kbd { opacity: 0.6; }
