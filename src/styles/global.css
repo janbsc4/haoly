@@ -398,9 +398,12 @@ a {
   color: var(--muted);
 }
 
+/* One ring: the jade border and halo mark focus, so the global outline is dropped. */
 .search-field input:focus {
   border-color: var(--jade);
   background: var(--surface);
+  box-shadow: 0 0 0 3px var(--jade-soft);
+  outline: none;
 }
 
 .search-icon {
