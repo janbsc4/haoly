@@ -385,7 +385,7 @@ const metaToggle = (key: "description" | "socialDescription" | "ogImageAlt") =>
         <div><h2 id="practical-title"><T locales={locales} text={pick((c) => c.freeTitle)} /><br /><em><T locales={locales} text={pick((c) => c.freeTitleEm)} /></em></h2><p class="lp-practical-benefit"><T locales={locales} text={pick((c) => c.freeIntro)} /></p></div>
         <div class="lp-faq">
           {copy.en.faq.map((_, index) => (
-            <details open={index === 1}><summary><T locales={locales} text={pick((c) => c.faq[index][0])} /><span aria-hidden="true">+</span></summary><p><T locales={locales} text={pick((c) => c.faq[index][1])} /></p></details>
+            <details open={index === 1}><summary><T locales={locales} text={pick((c) => c.faq[index][0])} /><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M12 6v12M6 12h12" /></svg></span></summary><p><T locales={locales} text={pick((c) => c.faq[index][1])} /></p></details>
           ))}
         </div>
       </section>

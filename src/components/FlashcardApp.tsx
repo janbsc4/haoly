@@ -911,7 +911,7 @@ export default function FlashcardApp({
         <div className="toast" role="status">
           <span>{m.notices[notice]}</span>
           <button type="button" aria-label={m.toastCloseAria} onClick={clearNotice}>
-            ×
+            <AppIcon name="close" />
           </button>
         </div>
       ) : null}
@@ -1004,7 +1004,7 @@ export default function FlashcardApp({
                 aria-label={m.search.clearAria}
                 onClick={clearQuery}
               >
-                ×
+                <AppIcon name="close" />
               </button>
             ) : null}
           </div>
@@ -1159,7 +1159,7 @@ export default function FlashcardApp({
         >
           <div className="modal-heading">
             <h2 id="filter-title">{m.filters.sheetTitle}</h2>
-            <button type="button" aria-label={m.filters.sheetCloseAria} onClick={closeFilterSheet}>×</button>
+            <button type="button" aria-label={m.filters.sheetCloseAria} onClick={closeFilterSheet}><AppIcon name="close" /></button>
           </div>
           <label>
             {m.filters.topicLabel}
@@ -1208,7 +1208,7 @@ export default function FlashcardApp({
         >
           <div className="modal-heading">
             <h2 id="help-title">{m.help.title}</h2>
-            <button type="button" aria-label={m.help.closeAria} onClick={closeHelp}>×</button>
+            <button type="button" aria-label={m.help.closeAria} onClick={closeHelp}><AppIcon name="close" /></button>
           </div>
 
           <ol className="help-steps">
@@ -1271,7 +1271,7 @@ export default function FlashcardApp({
         >
           <div className="modal-heading">
             <h2 id="voice-title">{m.voice.title}</h2>
-            <button type="button" aria-label={m.voice.closeAria} onClick={closeVoice}>×</button>
+            <button type="button" aria-label={m.voice.closeAria} onClick={closeVoice}><AppIcon name="close" /></button>
           </div>
           <label className="voice-mute">
             <input

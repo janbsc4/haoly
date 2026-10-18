@@ -1,6 +1,7 @@
 import { localized } from "../lib/locale";
 import type { Messages } from "../lib/messages";
 import type { CardPack, Locale } from "../types";
+import { AppIcon } from "./AppIcon";
 import { CardPackBooster } from "./CardPackBooster";
 import { Modal } from "./Modal";
 
@@ -65,7 +66,7 @@ export function CardPackDialogs({
               <p className="eyebrow">{m.packs.panelEyebrow}</p>
               <h2 id="packs-title">{m.packs.panelTitle}</h2>
             </div>
-            <button type="button" aria-label={m.packs.closeAria} onClick={onClosePanel}>×</button>
+            <button type="button" aria-label={m.packs.closeAria} onClick={onClosePanel}><AppIcon name="close" /></button>
           </div>
           <p className="packs-intro">{m.packs.intro}</p>
           {openedOutsideStudy ? (

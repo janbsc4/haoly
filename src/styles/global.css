@@ -415,12 +415,14 @@ a {
 .search-field button {
   position: absolute;
   right: 3px;
+  display: grid;
+  place-items: center;
   width: 44px;
   height: 44px;
+  padding: 0;
   border: 0;
   background: transparent;
   color: var(--muted);
-  font-size: 1.3rem;
 }
 
 .button {
@@ -1672,12 +1674,15 @@ html:has(dialog[open]) {
 }
 
 .modal-heading button {
+  display: grid;
+  flex: none;
+  place-items: center;
   width: 44px;
   height: 44px;
+  padding: 0;
   border: 0;
   border-radius: 50%;
   background: var(--surface-warm);
-  font-size: 1.35rem;
 }
 
 .voice-dialog {
@@ -1770,13 +1775,21 @@ html:has(dialog[open]) {
 }
 
 .toast button {
+  display: grid;
+  place-items: center;
   width: 38px;
   height: 38px;
+  padding: 0;
   border: 0;
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.1);
   color: #fff;
-  font-size: 1.2rem;
+}
+
+.toast .app-icon,
+.search-field button .app-icon {
+  width: 18px;
+  height: 18px;
 }
 
 .skeleton {
@@ -2566,3 +2579,4 @@ html:has(dialog[open]) {
   width: 44px;
   height: 44px;
 }
+

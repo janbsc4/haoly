@@ -175,7 +175,8 @@ p { margin-top: 0; text-wrap: pretty; }
 .lp-faq details[open] { border-color: var(--border-dark); }
 .lp-faq summary { display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 32px; cursor: pointer; font-size: 1rem; font-weight: 700; list-style: none; }
 .lp-faq summary::-webkit-details-marker { display: none; }
-.lp-faq summary > span:last-child { display: grid; flex: none; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--surface-warm); color: var(--muted); font-size: 1.2rem; font-weight: 400; transition: transform 150ms ease; }
+.lp-faq summary > span:last-child { display: grid; flex: none; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--surface-warm); color: var(--muted); transition: transform 150ms ease; }
+.lp-faq summary svg { width: 18px; height: 18px; }
 .lp-faq details[open] summary > span:last-child { transform: rotate(45deg); }
 .lp-faq details p { margin: 10px 36px 4px 0; color: var(--muted); font-size: 0.95rem; line-height: 1.7; }
 
