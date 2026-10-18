@@ -67,7 +67,8 @@ interface FlashcardAppProps {
   initialLocale?: Locale;
 }
 
-const Conversation = lazy(() => import("./Conversation"));
+const loadConversation = () => import("./Conversation");
+const Conversation = lazy(loadConversation);
 
 const PACK_OPENING_DURATION_MS = 1050;
 const PACK_TRIGGER_OPENING_DURATION_MS = 160;
@@ -279,6 +280,34 @@ export default function FlashcardApp({
     [activeView, filters, ownerKey, sessionNonce],
   );
   const queueReady = queueContext === desiredQueueContext;
+  // Rebuild the queue during render, not in an effect: an effect would commit
+  // one frame of the loading placeholder on every view switch or search
+  // keystroke, which flashes as a dark block on phones. React discards this
+  // render and redoes it with the new queue before anything reaches the DOM.
+  // Only the context resets the queue; progress, favorites and open packs
+  // change constantly during a session and are repaired incrementally by the
+  // effects below, which keep the current card, revealed state, and order.
+  if (loaded && !queueReady) {
+    setQueue(
+      shuffle(
+        visibleUnits(
+          units,
+          activeView,
+          studyProgress,
+          filters,
+          favorites,
+          openPackIdSet,
+          packIdByCardId,
+          locale,
+        ),
+      ),
+    );
+    setQueueIndex(0);
+    setRevealed(false);
+    setCompleted(false);
+    setTally(EMPTY_TALLY);
+    setQueueContext(desiredQueueContext);
+  }
 
   useEffect(() => {
     applyLocaleMetadata(locale);
@@ -324,36 +353,8 @@ export default function FlashcardApp({
   }, [counts, ownerKey, ready, viewInitialized]);
 
   useEffect(() => {
-    if (!ready || !viewInitialized) return;
-    writePreference("yuwenke:last-view:v1", activeView);
-    const nextQueue = shuffle(
-      visibleUnits(
-        units,
-        activeView,
-        studyProgress,
-        filters,
-        favorites,
-        openPackIdSet,
-        packIdByCardId,
-        locale,
-      ),
-    );
-    /* eslint-disable react-hooks/set-state-in-effect -- the queue is derived
-       from a randomized shuffle, so it must be built outside render and reset
-       whenever the underlying dataset or visible units change. */
-    setQueue(nextQueue);
-    setQueueIndex(0);
-    setRevealed(false);
-    setCompleted(false);
-    setTally(EMPTY_TALLY);
-    setQueueContext(desiredQueueContext);
-    /* eslint-enable react-hooks/set-state-in-effect */
-    // The remaining inputs (progress, favorites, filters, locale) are
-    // deliberately excluded: they change constantly during a session and are
-    // repaired incrementally by the effects below, which keep the current
-    // card, revealed state, and queue order instead of reshuffling.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [desiredQueueContext, ready, units, viewInitialized]);
+    if (loaded) writePreference("yuwenke:last-view:v1", activeView);
+  }, [activeView, loaded]);
 
   useEffect(() => {
     const previous = new Set(previousOpenPackIdsRef.current);
@@ -779,7 +780,14 @@ export default function FlashcardApp({
               </span>
             </button>
           ))}
-          <button type="button" className={loaded && chatOpen ? "is-active" : ""} aria-current={loaded && chatOpen ? "page" : undefined} onClick={() => setChatOpen(true)}>
+          <button
+            type="button"
+            className={loaded && chatOpen ? "is-active" : ""}
+            aria-current={loaded && chatOpen ? "page" : undefined}
+            // Fetch the chat on touch, not on click, so it is usually ready by the time the tab opens.
+            onPointerDown={() => void loadConversation()}
+            onClick={() => setChatOpen(true)}
+          >
             <AppIcon name="chat" />
             <span>{locale === "es" ? "Conversa" : "Converse"}</span>
           </button>

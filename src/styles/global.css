@@ -1861,9 +1861,12 @@ html:has(dialog[open]) {
     box-shadow 200ms ease-out;
 }
 
+/* Every view lands the same way, whether it opens on a card or a message. */
 .session-panel > .session-progress,
 .session-panel > .study-card,
-.session-panel > .decision-area {
+.session-panel > .decision-area,
+.session-panel > .empty-state,
+.session-panel > .summary-card {
   animation: reveal 280ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
 
