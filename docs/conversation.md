@@ -78,15 +78,3 @@ These limits constrain requests, not money. Léi uses `openai/gpt-6-luna` throug
 `shared/chat.ts` defines the request and response contract. `worker/src/tutor.ts` selects vocabulary and calls the model through OpenRouter. `worker/src/auth.ts` verifies Firebase identities. `worker/src/index.ts` handles requests and reserves usage counters using `quota.ts`. `src/lib/chatClient.ts` sends either the signed-in user's ID token or a guest browser ID to the Worker.
 
 Tests cover signed JWT validation, unauthorized requests, provider errors, vocabulary selection, account-separated history, model labels, and draft preservation. Miniflare runs the compiled Worker and SQLite Durable Object to test concurrent reservations against real local storage. Existing Firestore rules and progress-sync tests continue to protect learner data.
-
-## Feedback
-
-The study app's account menu has a Send feedback dialog. It posts to the same Worker at `/feedback`, which files each report as an issue in the private repository named by `FEEDBACK_REPO` in `worker/wrangler.jsonc`. The report contains no contact details unless the learner writes some. The Worker accepts reports only from `ALLOWED_ORIGIN`, validates them with `shared/feedback.ts`, and limits each network to five reports per hour and the whole site to fifty per day through the same Durable Object.
-
-To enable it, create the private repository and a fine-grained GitHub token limited to that repository with Issues read and write, then run:
-
-```
-npx wrangler secret put FEEDBACK_GITHUB_TOKEN --config worker/wrangler.jsonc
-```
-
-Without the token, the route answers `unavailable` and the dialog shows an error. The menu item appears whenever `PUBLIC_CHAT_API_URL` is set.

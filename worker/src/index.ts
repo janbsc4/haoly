@@ -4,12 +4,6 @@ import type {
 } from "@cloudflare/workers-types";
 import { z } from "zod";
 import { DEFAULT_CHAT_MODEL, type ChatCard } from "../../shared/chat";
-import {
-  FEEDBACK_GLOBAL_DAILY_LIMIT,
-  FEEDBACK_IP_HOURLY_LIMIT,
-  feedbackIssue,
-  feedbackRequestSchema,
-} from "../../shared/feedback";
 import catalog from "../generated/catalog.json";
 import catalogVersion from "../generated/catalog-version.json";
 import { verifyFirebaseToken } from "./auth";
@@ -28,14 +22,12 @@ export interface Env {
   CHAT_GLOBAL_DAILY_LIMIT: string;
   CHAT_GLOBAL_MONTHLY_LIMIT: string;
   CHAT_QUOTA: DurableObjectNamespace;
-  FEEDBACK_REPO?: string;
-  FEEDBACK_GITHUB_TOKEN?: string;
 }
 
 const cards = catalog as ChatCard[];
 const MAX_BODY_BYTES = 128 * 1024;
 
-async function guestIpKey(ip: string, secret: string, scope = "lei-guest"): Promise<string> {
+async function guestIpKey(ip: string, secret: string): Promise<string> {
   const key = await crypto.subtle.importKey(
     "raw",
     new TextEncoder().encode(secret),
@@ -46,7 +38,7 @@ async function guestIpKey(ip: string, secret: string, scope = "lei-guest"): Prom
   const signature = await crypto.subtle.sign(
     "HMAC",
     key,
-    new TextEncoder().encode(`${scope}:${ip}`),
+    new TextEncoder().encode(`lei-guest:${ip}`),
   );
   return Array.from(new Uint8Array(signature), (byte) =>
     byte.toString(16).padStart(2, "0"),
@@ -69,8 +61,6 @@ export class ChatQuota {
   ) {}
 
   async fetch(request: Request): Promise<Response> {
-    if (new URL(request.url).pathname === "/feedback")
-      return this.reserveFeedback(await request.text());
     const uid = await request.text();
     if (!uid || uid.length > 128) return new Response(null, { status: 400 });
     const guestIpKey = request.headers.get("X-Lei-Guest-Ip-Key");
@@ -128,37 +118,7 @@ export class ChatQuota {
       return new Response(null, { status: 503 });
     }
   }
-
-  private async reserveFeedback(ipKey: string): Promise<Response> {
-    if (!/^[a-f0-9]{64}$/.test(ipKey)) return new Response(null, { status: 400 });
-    const allowed = await this.ctx.storage.transaction(async (transaction) => {
-      const now = new Date();
-      const hour = now.toISOString().slice(0, 13);
-      const day = hour.slice(0, 10);
-      const [ip, global] = await Promise.all([
-        transaction.get(`feedback-ip:${ipKey}`),
-        transaction.get("feedback-global"),
-      ]);
-      const ipUsage = ip === undefined ? null : feedbackUsageSchema.parse(ip);
-      const globalUsage = global === undefined ? null : feedbackUsageSchema.parse(global);
-      const ipCount = ipUsage?.window === hour ? ipUsage.count : 0;
-      const globalCount = globalUsage?.window === day ? globalUsage.count : 0;
-      if (ipCount >= FEEDBACK_IP_HOURLY_LIMIT || globalCount >= FEEDBACK_GLOBAL_DAILY_LIMIT)
-        return false;
-      await transaction.put({
-        [`feedback-ip:${ipKey}`]: { window: hour, count: ipCount + 1 },
-        "feedback-global": { window: day, count: globalCount + 1 },
-      });
-      return true;
-    });
-    return new Response(null, { status: allowed ? 204 : 429 });
-  }
 }
-
-const feedbackUsageSchema = z.object({
-  window: z.string(),
-  count: z.number().int().nonnegative(),
-});
 
 const guestIpUsageSchema = z.object({
   day: z.string(),
@@ -184,66 +144,6 @@ async function readBody(request: Request): Promise<unknown> {
   return JSON.parse(text + decoder.decode()) as unknown;
 }
 
-function clientIp(request: Request): string | null {
-  const ip = request.headers.get("CF-Connecting-IP") ??
-    (new URL(request.url).hostname === "localhost" ? "127.0.0.1" : null);
-  return ip && ip.length <= 64 ? ip : null;
-}
-
-async function handleFeedback(
-  request: Request,
-  env: Env,
-  headers: Record<string, string>,
-  error: (status: number, code: string) => Response,
-): Promise<Response> {
-  if (request.method === "OPTIONS")
-    return new Response(null, {
-      status: 204,
-      headers: {
-        ...headers,
-        "Access-Control-Allow-Methods": "POST",
-        "Access-Control-Allow-Headers": "Content-Type",
-        "Access-Control-Max-Age": "3600",
-      },
-    });
-  if (request.method !== "POST") return error(405, "invalid-argument");
-  // Only the site may submit, so the endpoint is not an open issue-creation relay.
-  if (request.headers.get("Origin") !== env.ALLOWED_ORIGIN)
-    return error(403, "permission-denied");
-  if (!env.FEEDBACK_REPO || !env.FEEDBACK_GITHUB_TOKEN || !env.OPENROUTER_API_KEY)
-    return error(503, "unavailable");
-  let data;
-  try {
-    if (request.headers.get("Content-Type")?.split(";")[0].trim() !== "application/json")
-      throw new Error("Expected JSON.");
-    data = feedbackRequestSchema.parse(await readBody(request));
-  } catch {
-    return error(400, "invalid-argument");
-  }
-  const ip = clientIp(request);
-  if (!ip) return error(503, "unavailable");
-  const quota = env.CHAT_QUOTA.get(env.CHAT_QUOTA.idFromName("global"));
-  const reservation = await quota.fetch("https://quota/feedback", {
-    method: "POST",
-    body: await guestIpKey(ip, env.OPENROUTER_API_KEY, "feedback"),
-  });
-  if (reservation.status === 429) return error(429, "resource-exhausted");
-  if (!reservation.ok) return error(503, "unavailable");
-  const issue = await fetch(`https://api.github.com/repos/${env.FEEDBACK_REPO}/issues`, {
-    method: "POST",
-    headers: {
-      Accept: "application/vnd.github+json",
-      Authorization: `Bearer ${env.FEEDBACK_GITHUB_TOKEN}`,
-      "Content-Type": "application/json",
-      "User-Agent": "Haoly-Feedback/1.0",
-      "X-GitHub-Api-Version": "2022-11-28",
-    },
-    body: JSON.stringify(feedbackIssue(data, request.headers.get("User-Agent") ?? "")),
-  }).catch(() => null);
-  if (!issue?.ok) return error(503, "unavailable");
-  return new Response(null, { status: 204, headers });
-}
-
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const origin = request.headers.get("Origin");
@@ -267,7 +167,6 @@ export default {
       if (request.method !== "GET") return error(405, "invalid-argument");
       return Response.json(catalogVersion, { headers });
     }
-    if (path === "/feedback") return handleFeedback(request, env, headers, error);
     if (path !== "/conversation")
       return error(404, "not-found");
     if (request.method === "OPTIONS")
@@ -302,8 +201,9 @@ export default {
         return error(401, "unauthenticated");
       }
     } else {
-      const ip = clientIp(request);
-      if (!ip) return error(503, "unavailable");
+      const ip = request.headers.get("CF-Connecting-IP") ??
+        (new URL(request.url).hostname === "localhost" ? "127.0.0.1" : null);
+      if (!ip || ip.length > 64) return error(503, "unavailable");
       uid = guestId ?? "";
       ipKey = await guestIpKey(ip, env.OPENROUTER_API_KEY);
     }

@@ -20,3 +20,4 @@ Flashcard Content:
 
 Infrastructure:
 - [ ] Make the GitHub repo private and move hosting from GitHub Pages to Cloudflare Pages (GitHub Free only serves Pages from public repos). Update the deploy workflow, repoint haoly.app DNS, and check the Actions minutes budget.
+- [ ] Feedback button: anonymous bug/idea form in the account menu that reaches me without exposing my email or phone. A built version lives on branch `feedback-system` (Worker `/feedback` route files issues in a private `haoly-feedback` repo); it needs the repo, a fine-grained `FEEDBACK_GITHUB_TOKEN` Worker secret, and a Worker deploy before re-landing.

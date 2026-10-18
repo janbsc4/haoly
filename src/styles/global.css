@@ -1117,7 +1117,6 @@ html:has(dialog[open]) {
 .login-dialog,
 .help-dialog,
 .voice-dialog,
-.feedback-dialog,
 .packs-dialog,
 .confirm-dialog,
 .sheet {
@@ -1742,80 +1741,6 @@ html:has(dialog[open]) {
   accent-color: var(--cinnabar);
 }
 
-.feedback-dialog form {
-  display: grid;
-  gap: 16px;
-}
-
-.feedback-dialog p {
-  margin: 0;
-}
-
-.feedback-kinds {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 18px;
-  margin: 0;
-  padding: 0;
-  border: 0;
-}
-
-.feedback-kinds legend {
-  width: 100%;
-  margin-bottom: 8px;
-  padding: 0;
-  color: var(--muted);
-  font-size: 0.78rem;
-  font-weight: 600;
-}
-
-.feedback-kinds label {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  color: var(--ink);
-  font-size: 0.9rem;
-  font-weight: 600;
-}
-
-.feedback-kinds input {
-  margin: 0;
-  accent-color: var(--cinnabar);
-}
-
-.feedback-message {
-  display: grid;
-  gap: 7px;
-  color: var(--muted);
-  font-size: 0.78rem;
-  font-weight: 600;
-}
-
-.feedback-message textarea {
-  width: 100%;
-  min-height: 120px;
-  padding: 10px 12px;
-  resize: vertical;
-  border: 1px solid var(--border-dark);
-  border-radius: 10px;
-  background: var(--surface);
-  color: var(--ink);
-  font: inherit;
-  font-size: 0.95rem;
-  font-weight: 400;
-}
-
-.feedback-privacy {
-  color: var(--muted);
-  font-size: 0.8rem;
-}
-
-.feedback-error {
-  color: var(--cinnabar);
-  font-size: 0.88rem;
-  font-weight: 600;
-}
-
 .voice-select-label {
   display: grid;
   gap: 7px;
@@ -2245,8 +2170,7 @@ html:has(dialog[open]) {
   .help-dialog,
   .packs-dialog,
   .confirm-dialog,
-  .voice-dialog,
-  .feedback-dialog {
+  .voice-dialog {
     max-height: calc(100vh - 40px);
     max-height: calc(100dvh - 40px);
     padding: 26px 20px;

@@ -15,7 +15,6 @@
     "CHAT_GUEST_IP_DAILY_LIMIT": "30",
     "CHAT_GLOBAL_DAILY_LIMIT": "300",
     "CHAT_GLOBAL_MONTHLY_LIMIT": "3000",
-    "FEEDBACK_REPO": "janbsc4/haoly-feedback",
   },
   "durable_objects": {
     "bindings": [
