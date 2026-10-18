@@ -2693,7 +2693,10 @@ html:has(dialog[open]) {
 
 /* Converse morph (morphMainCard): only the card moves; the rest of the page
    swaps at once. Snapshots keep their natural size so text never stretches. */
+/* One of card, summary, or empty state shows at a time, so they share a name. */
 .study-card,
+.summary-card,
+.empty-state,
 .conversation {
   view-transition-name: main-card;
 }
