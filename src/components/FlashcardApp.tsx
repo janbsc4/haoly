@@ -8,6 +8,7 @@ import {
   useState,
   type ChangeEvent,
 } from "react";
+import { flushSync } from "react-dom";
 
 import type {
   CardType,
@@ -82,6 +83,16 @@ function reducedMotionRequested(): boolean {
     typeof window.matchMedia === "function" &&
     window.matchMedia("(prefers-reduced-motion: reduce)").matches
   );
+}
+
+// The study card is narrower than the chat panel; morph one into the other so
+// switching to and from Converse resizes the card instead of jumping.
+function morphMainCard(update: () => void) {
+  if (typeof document.startViewTransition !== "function" || reducedMotionRequested()) {
+    update();
+    return;
+  }
+  document.startViewTransition(() => flushSync(update));
 }
 
 function initials(
@@ -668,12 +679,16 @@ export default function FlashcardApp({
   const resetFilters = () => setFilters(EMPTY_FILTERS);
 
   const changeView = (view: StudyView) => {
-    setChatOpen(false);
+    const update = () => {
+      setChatOpen(false);
+      setActiveView(view);
+      setAccountOpen(false);
+    };
     if (window.location.hash === "#conversation") {
       window.history.replaceState(null, "", window.location.pathname + window.location.search);
     }
-    setActiveView(view);
-    setAccountOpen(false);
+    if (chatOpen) morphMainCard(update);
+    else update();
   };
 
   const startNewSession = () => setSessionNonce((value) => value + 1);
@@ -786,7 +801,7 @@ export default function FlashcardApp({
             aria-current={loaded && chatOpen ? "page" : undefined}
             // Fetch the chat on touch, not on click, so it is usually ready by the time the tab opens.
             onPointerDown={() => void loadConversation()}
-            onClick={() => setChatOpen(true)}
+            onClick={() => { if (!chatOpen) morphMainCard(() => setChatOpen(true)); }}
           >
             <AppIcon name="chat" />
             <span>{locale === "es" ? "Conversa" : "Converse"}</span>
