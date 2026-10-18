@@ -9,7 +9,9 @@
 }
 * { box-sizing: border-box; }
 html { min-width: 320px; scroll-behavior: smooth; background: var(--paper); }
-body { margin: 0; overflow-x: clip; color: var(--ink); background: var(--paper); font-family: var(--font-ui); line-height: 1.5; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
+body { margin: 0; color: var(--ink); background: var(--paper); font-family: var(--font-ui); line-height: 1.5; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
+/* Clip on main, not body: body overflow propagates to the viewport, and iOS Safari still lets it pan sideways. */
+main { overflow-x: clip; }
 a { color: inherit; }
 button { font: inherit; cursor: pointer; }
 button, a, summary { -webkit-tap-highlight-color: transparent; }

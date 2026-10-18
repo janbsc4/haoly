@@ -25,6 +25,11 @@ describe("shared visual identity", () => {
     }
   });
 
+  it("clips landing overflow inside main so phones cannot pan the page sideways", () => {
+    expect(landing).toMatch(/(?:^|\n)main\s*\{[^}]*overflow-x: clip/);
+    expect(landing.match(/(?:^|\n)body\s*\{([^}]+)\}/)?.[1]).not.toContain("overflow");
+  });
+
   it("uses the app UI font for landing headings without loading a second Latin font", () => {
     const headings = landing.match(/h1, h2\s*\{([^}]+)\}/)?.[1];
     expect(headings).toContain("font-family: var(--font-ui)");
