@@ -102,8 +102,8 @@ function waitForElement(selector: string, timeoutMs: number): Promise<void> {
   });
 }
 
-// The study card is narrower than the chat panel; morph one into the other so
-// switching to and from Converse resizes the card instead of jumping. The new
+// Cards, empty states, and the chat panel differ in size; morph one into the
+// other so switching views resizes the card instead of jumping. The new
 // snapshot waits for `target` when given: the chat panel loads lazily, and
 // snapshotting its loading placeholder would fade the card out instead.
 function morphMainCard(update: () => void, target?: string) {
@@ -113,6 +113,11 @@ function morphMainCard(update: () => void, target?: string) {
   }
   document.startViewTransition(async () => {
     flushSync(update);
+    // The study panel fades its content in on every view; the morph already
+    // blends old into new, so skip to the end instead of fading twice.
+    for (const element of document.querySelectorAll(".session-panel > *")) {
+      for (const animation of element.getAnimations()) animation.finish();
+    }
     if (target) await waitForElement(target, MORPH_TARGET_WAIT_MS);
   });
 }
@@ -712,7 +717,7 @@ export default function FlashcardApp({
     if (window.location.hash === "#conversation") {
       window.history.replaceState(null, "", window.location.pathname + window.location.search);
     }
-    if (chatOpen) morphMainCard(update);
+    if (chatOpen || view !== activeView) morphMainCard(update);
     else update();
   };
 
