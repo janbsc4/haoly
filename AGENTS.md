@@ -40,7 +40,7 @@ Review every card as a complete learning unit: prompt, answer, explanation, and 
 
 Node.js 22.13+ is required. Commands live in `package.json`. The husky `pre-push` hook runs lint, typecheck, and tests; CI is the unskippable layer and runs the same checks on pull requests before deploying. The hook also appends each test run, passing or failing, to the gitignored `.test-history/runs.jsonl` (`scripts/record_test_run.mjs`), a local record of which tests fail and how often.
 
-For visual QA, build and serve the real routes, then screenshot `/` and `/app/<locale>/`. Astro moves to the next free port if 4321 is taken, so read the port from its output. Prefer `localhost` when the browser can reach it: an IP origin over plain HTTP is not a secure context, so `crypto.randomUUID` is missing and the Converse tab crashes. `--host` exposes the server for browsers that can only reach the machine by IP:
+For visual QA, build and serve the real routes, then screenshot `/` and `/study/<locale>/`. Astro moves to the next free port if 4321 is taken, so read the port from its output. Prefer `localhost` when the browser can reach it: an IP origin over plain HTTP is not a secure context, so `crypto.randomUUID` is missing and the Converse tab crashes. `--host` exposes the server for browsers that can only reach the machine by IP:
 
 ```
 npm run build && npm run preview -- --host 0.0.0.0 --port 4321

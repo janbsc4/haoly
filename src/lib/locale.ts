@@ -63,7 +63,7 @@ export function resolveLocalePreference(
   return available.includes("en") ? "en" : DEFAULT_LOCALE;
 }
 
-const APP_SEGMENT = "app";
+const APP_SEGMENT = "study";
 
 /** The marketing landing page at the base of the site. */
 export function homeUrl(): string {
@@ -115,4 +115,13 @@ export function landingLangResolverScript(): string {
 /** The installed app's entry route shares the landing page's language policy. */
 export function appLaunchResolverScript(): string {
   return localeResolverScript(true);
+}
+
+/**
+ * The app used to live under /app/. Old bookmarks, shared links and Home Screen
+ * shortcuts still point there, and GitHub Pages cannot redirect server-side,
+ * so the old routes forward here, keeping query and hash.
+ */
+export function legacyLocaleRedirectScript(locale: Locale): string {
+  return `window.location.replace(${JSON.stringify(localeUrl(locale))} + window.location.search + window.location.hash);`;
 }

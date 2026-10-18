@@ -5,14 +5,20 @@ import { runInNewContext } from "node:vm";
 
 import { afterEach } from "vitest";
 
-import { appLaunchResolverScript, landingLangResolverScript } from "../src/lib/locale";
+import {
+  appLaunchResolverScript,
+  landingLangResolverScript,
+  legacyLocaleRedirectScript,
+} from "../src/lib/locale";
 import {
   assertAuditsNotDeployed,
   resolveEntryFromHtml,
   resolveLandingLangFromHtml,
+  resolveLegacyRedirectFromHtml,
   validateLocalizedRouteHtml,
   validateLandingRouteHtml,
   validateAppEntryRouteHtml,
+  validateLegacyLocaleRouteHtml,
 } from "../scripts/validate_static_routes.mjs";
 
 const site = "https://haoly.app";
@@ -31,15 +37,15 @@ function routeHtml(locale: "es" | "en") {
             "Learn Mandarin with flashcards and practice your words with Léi, your AI conversation partner. With pinyin and explanations in English.",
           ogLocale: "en_US",
         };
-  const canonical = `${site}${base}app/${locale}/`;
+  const canonical = `${site}${base}study/${locale}/`;
 
   return `<!doctype html>
 <html lang="${locale}">
 <head>
 <meta name="description" content="${metadata.description}">
 <link rel="canonical" href="${canonical}">
-<link rel="alternate" hreflang="es" href="${site}${base}app/es/">
-<link rel="alternate" hreflang="en" href="${site}${base}app/en/">
+<link rel="alternate" hreflang="es" href="${site}${base}study/es/">
+<link rel="alternate" hreflang="en" href="${site}${base}study/en/">
 <link rel="alternate" hreflang="x-default" href="${site}${base}">
 <meta property="og:locale" content="${metadata.ogLocale}">
 <meta property="og:url" content="${canonical}">
@@ -57,16 +63,16 @@ describe("localized static route validation", () => {
   it("rejects metadata that points at the wrong locale", () => {
     expect(() =>
       validateLocalizedRouteHtml(
-        routeHtml("en").replace("/app/en/", "/app/es/"),
+        routeHtml("en").replace("/study/en/", "/study/es/"),
         "en",
       ),
-    ).toThrow("/app/en/");
+    ).toThrow("/study/en/");
   });
 
   it("ignores expected metadata hidden in comments", () => {
     const html = routeHtml("en").replace(
-      '<link rel="canonical" href="https://haoly.app/app/en/">',
-      '<!-- <link rel="canonical" href="https://haoly.app/app/en/"> -->',
+      '<link rel="canonical" href="https://haoly.app/study/en/">',
+      '<!-- <link rel="canonical" href="https://haoly.app/study/en/"> -->',
     );
     expect(() => validateLocalizedRouteHtml(html, "en")).toThrow(
       "exactamente un elemento",
@@ -75,8 +81,8 @@ describe("localized static route validation", () => {
 
   it("rejects conflicting duplicate metadata", () => {
     const html = routeHtml("en").replace(
-      '<link rel="canonical" href="https://haoly.app/app/en/">',
-      '<link rel="canonical" href="https://haoly.app/app/en/">' +
+      '<link rel="canonical" href="https://haoly.app/study/en/">',
+      '<link rel="canonical" href="https://haoly.app/study/en/">' +
         '<link rel="canonical" href="https://example.com/wrong/">',
     );
     expect(() => validateLocalizedRouteHtml(html, "en")).toThrow(
@@ -99,8 +105,8 @@ describe("landing root validation", () => {
 <script data-install-suppression>window.addEventListener("beforeinstallprompt", (event) => event.preventDefault());</script>
 </head>
 <body>
-<a href="${base}app/es/">Abrir</a>
-<a href="${base}app/en/">Open</a>
+<a href="${base}study/es/">Abrir</a>
+<a href="${base}study/en/">Open</a>
 </body>
 </html>`;
   }
@@ -126,10 +132,10 @@ describe("landing root validation", () => {
 
   it("rejects a landing page that forgets one app locale", () => {
     const html = landingHtml().replace(
-      `<a href="${base}app/en/">Open</a>`,
+      `<a href="${base}study/en/">Open</a>`,
       "",
     );
-    expect(() => validateLandingRouteHtml(html)).toThrow(`${base}app/en/`);
+    expect(() => validateLandingRouteHtml(html)).toThrow(`${base}study/en/`);
   });
 
   it.each([
@@ -167,33 +173,72 @@ describe("Home Screen app entry", () => {
     { standalone: true },
     { appleStandalone: true },
   ])("sends an existing installed root shortcut to the saved language (%j)", (options) => {
-    expect(resolveEntryFromHtml(rootHtml, "es", ["en-US"], options).destination).toBe("/app/es/");
+    expect(resolveEntryFromHtml(rootHtml, "es", ["en-US"], options).destination).toBe("/study/es/");
   });
 
   it("launches the app in the saved language while keeping conversation links", () => {
     expect(resolveEntryFromHtml(appHtml, "en", ["es-ES"], {
       search: "?source=homescreen", hash: "#conversation",
-    }).destination).toBe("/app/en/?source=homescreen#conversation");
+    }).destination).toBe("/study/en/?source=homescreen#conversation");
   });
 
   it("uses browser language when storage is blocked", () => {
     expect(resolveEntryFromHtml(appHtml, "en", ["es-ES"], {
       storageBlocked: true,
-    }).destination).toBe("/app/es/");
+    }).destination).toBe("/study/es/");
   });
 
   it("falls back to English when neither language preference is supported", () => {
-    expect(resolveEntryFromHtml(appHtml, "fr", ["de-DE"]).destination).toBe("/app/en/");
+    expect(resolveEntryFromHtml(appHtml, "fr", ["de-DE"]).destination).toBe("/study/en/");
   });
 
   it("requires the app entry to link its manifest and both language fallbacks", () => {
     const html = `${appHtml}
       <link rel="manifest" href="${base}site.webmanifest">
-      <a lang="es" href="${base}app/es/">Abrir</a>
-      <a lang="en" href="${base}app/en/">Open</a>`;
+      <a lang="es" href="${base}study/es/">Abrir</a>
+      <a lang="en" href="${base}study/en/">Open</a>`;
     expect(() => validateAppEntryRouteHtml(html)).not.toThrow();
-    expect(() => validateAppEntryRouteHtml(html.replace(`${base}app/en/`, "/wrong/")))
-      .toThrow("se esperaba /app/en/");
+    expect(() => validateAppEntryRouteHtml(html.replace(`${base}study/en/`, "/wrong/")))
+      .toThrow("se esperaba /study/en/");
+  });
+});
+
+describe("legacy /app/ routes", () => {
+  function legacyHtml(locale: "es" | "en") {
+    return `<meta name="robots" content="noindex">
+<script data-legacy-redirect>${legacyLocaleRedirectScript(locale)}</script>
+<meta http-equiv="refresh" content="0; url=${base}study/${locale}/">
+<link rel="canonical" href="${site}${base}study/${locale}/">`;
+  }
+
+  it("forwards an old shared link to the study path, keeping query and hash", () => {
+    expect(resolveLegacyRedirectFromHtml(legacyHtml("es"), {
+      search: "?source=share", hash: "#conversation",
+    })).toBe("/study/es/?source=share#conversation");
+  });
+
+  it.each(["es", "en"] as const)("accepts a complete %s legacy redirect", (locale) => {
+    expect(() => validateLegacyLocaleRouteHtml(legacyHtml(locale), locale)).not.toThrow();
+  });
+
+  it("rejects a legacy redirect that sends readers to the wrong locale", () => {
+    const html = legacyHtml("en").replace(legacyLocaleRedirectScript("en"), legacyLocaleRedirectScript("es"));
+    expect(() => validateLegacyLocaleRouteHtml(html, "en"))
+      .toThrow("se esperaba /study/en/?source=homescreen#conversation");
+  });
+
+  it("rejects a legacy redirect that search engines could index", () => {
+    const html = legacyHtml("es").replace('<meta name="robots" content="noindex">', "");
+    expect(() => validateLegacyLocaleRouteHtml(html, "es")).toThrow('meta[name="robots"]');
+  });
+
+  it("keeps old Home Screen shortcuts at /app/ launching the study path", () => {
+    const html = `<script data-app-launch>${appLaunchResolverScript()}</script>
+      <link rel="manifest" href="${base}site.webmanifest">
+      <a lang="es" href="${base}study/es/">Abrir</a>
+      <a lang="en" href="${base}study/en/">Open</a>`;
+    expect(() => validateAppEntryRouteHtml(html, "app")).not.toThrow();
+    expect(resolveEntryFromHtml(html, "es", ["en-US"]).destination).toBe("/study/es/");
   });
 });
 

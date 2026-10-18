@@ -4,7 +4,7 @@
   "description": "Cartas de mandarín y español a partir de notas de clase.",
   "lang": "es",
   "id": "/",
-  "start_url": "./app/",
+  "start_url": "./study/",
   "scope": "./",
   "display": "standalone",
   "background_color": "#ffffff",

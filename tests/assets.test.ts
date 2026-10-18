@@ -53,7 +53,7 @@ describe("Haoly identity assets", () => {
   it("uses base-path-safe relative URLs in the web manifest", () => {
     const manifest = JSON.parse(publicFile("site.webmanifest").toString("utf8"));
     expect(manifest.name).toBe("Haoly");
-    expect(manifest.start_url).toBe("./app/");
+    expect(manifest.start_url).toBe("./study/");
     expect(manifest.scope).toBe("./");
     expect(manifest.background_color).toBe("#ffffff");
     expect(manifest.theme_color).toBe("#ffffff");

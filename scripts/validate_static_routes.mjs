@@ -8,6 +8,10 @@ import { JSDOM } from "jsdom";
 
 import astroConfig from "../astro.config.mjs";
 
+const APP_SEGMENT = "study";
+// The app's old home; its routes must keep forwarding old links and shortcuts.
+const LEGACY_APP_SEGMENT = "app";
+
 const expectedMetadata = {
   es: {
     description:
@@ -46,7 +50,7 @@ function siteAndBase() {
 
 export function validateLocalizedRouteHtml(html, locale) {
   const { site, base } = siteAndBase();
-  const route = `${base}app/${locale}/`;
+  const route = `${base}${APP_SEGMENT}/${locale}/`;
   const canonical = `${site}${route}`;
   const metadata = expectedMetadata[locale];
   if (!metadata) throw new Error(`Locale no soportado: ${locale}`);
@@ -88,7 +92,7 @@ export function validateLocalizedRouteHtml(html, locale) {
       document,
       `link[rel="alternate"][hreflang="${alternate}"]`,
       "href",
-      `${site}${base}app/${alternate}/`,
+      `${site}${base}${APP_SEGMENT}/${alternate}/`,
       route,
     );
   }
@@ -152,28 +156,55 @@ export function validateLandingRouteHtml(html) {
   }
   requireAttribute(document, 'link[rel="canonical"]', "href", canonical, route);
 
-  const appLinks = [...document.querySelectorAll(`a[href^="${base}app/"]`)]
+  const appLinks = [...document.querySelectorAll(`a[href^="${base}${APP_SEGMENT}/"]`)]
     .map((anchor) => new URL(anchor.getAttribute("href"), site).pathname);
   for (const locale of Object.keys(expectedMetadata)) {
-    if (!appLinks.includes(`${base}app/${locale}/`)) {
-      throw new Error(`${route} debe enlazar a la app en ${locale} (${base}app/${locale}/).`);
+    if (!appLinks.includes(`${base}${APP_SEGMENT}/${locale}/`)) {
+      throw new Error(`${route} debe enlazar a la app en ${locale} (${base}${APP_SEGMENT}/${locale}/).`);
     }
   }
 }
 
-export function validateAppEntryRouteHtml(html) {
+export function validateAppEntryRouteHtml(html, segment = APP_SEGMENT) {
   const { site, base } = siteAndBase();
-  const route = `${base}app/`;
+  const route = `${base}${segment}/`;
   const document = new JSDOM(html).window.document;
   singleElement(document, "script[data-app-launch]", route);
   requireAttribute(document, 'link[rel="manifest"]', "href", `${base}site.webmanifest`, route);
   for (const locale of Object.keys(expectedMetadata)) {
     const link = document.querySelector(`a[lang="${locale}"]`);
     const actual = link && new URL(link.getAttribute("href"), site).pathname;
-    const expected = `${base}app/${locale}/`;
+    const expected = `${base}${APP_SEGMENT}/${locale}/`;
     if (actual !== expected) {
       throw new Error(`${route} tiene enlace de idioma ${locale} = ${actual}; se esperaba ${expected}.`);
     }
+  }
+}
+
+export function resolveLegacyRedirectFromHtml(html, { search = "", hash = "" } = {}) {
+  const script = new JSDOM(html).window.document.querySelector("script[data-legacy-redirect]")?.textContent;
+  if (!script) throw new Error("La ruta antigua no contiene el script de redirección.");
+  let destination = null;
+  runInNewContext(script, {
+    window: { location: { search, hash, replace: (url) => { destination = url; } } },
+  });
+  return destination;
+}
+
+export function validateLegacyLocaleRouteHtml(html, locale) {
+  const { site, base } = siteAndBase();
+  const route = `${base}${LEGACY_APP_SEGMENT}/${locale}/`;
+  const target = `${base}${APP_SEGMENT}/${locale}/`;
+  const document = new JSDOM(html).window.document;
+  requireAttribute(document, 'meta[name="robots"]', "content", "noindex", route);
+  requireAttribute(document, 'link[rel="canonical"]', "href", `${site}${target}`, route);
+  requireAttribute(document, 'meta[http-equiv="refresh"]', "content", `0; url=${target}`, route);
+  const search = "?source=homescreen";
+  const hash = "#conversation";
+  const expected = `${target}${search}${hash}`;
+  const actual = resolveLegacyRedirectFromHtml(html, { search, hash });
+  if (actual !== expected) {
+    throw new Error(`${route} redirige a ${actual}; se esperaba ${expected}.`);
   }
 }
 
@@ -198,15 +229,29 @@ export async function assertAuditsNotDeployed(
 export async function validateStaticRoutes(distDirectory = resolve("dist")) {
   await Promise.all(
     Object.keys(expectedMetadata).map(async (locale) => {
-      const html = await readFile(resolve(distDirectory, "app", locale, "index.html"), "utf8");
+      const html = await readFile(resolve(distDirectory, APP_SEGMENT, locale, "index.html"), "utf8");
       validateLocalizedRouteHtml(html, locale);
     }),
   );
 
   const rootHtml = await readFile(resolve(distDirectory, "index.html"), "utf8");
   validateLandingRouteHtml(rootHtml);
-  const appEntryHtml = await readFile(resolve(distDirectory, "app", "index.html"), "utf8");
+  const appEntryHtml = await readFile(resolve(distDirectory, APP_SEGMENT, "index.html"), "utf8");
   validateAppEntryRouteHtml(appEntryHtml);
+  const legacyEntryHtml = await readFile(
+    resolve(distDirectory, LEGACY_APP_SEGMENT, "index.html"),
+    "utf8",
+  );
+  validateAppEntryRouteHtml(legacyEntryHtml, LEGACY_APP_SEGMENT);
+  await Promise.all(
+    Object.keys(expectedMetadata).map(async (locale) => {
+      const html = await readFile(
+        resolve(distDirectory, LEGACY_APP_SEGMENT, locale, "index.html"),
+        "utf8",
+      );
+      validateLegacyLocaleRouteHtml(html, locale);
+    }),
+  );
 
   const rootCases = [
     ["es", ["en-US"], "es"],
@@ -222,12 +267,13 @@ export async function validateStaticRoutes(distDirectory = resolve("dist")) {
     if (actual !== expected) {
       throw new Error(`La raíz resolvió el idioma ${actual}; se esperaba ${expected}.`);
     }
-    const expectedUrl = `${siteAndBase().base}app/${expected}/`;
+    const expectedUrl = `${siteAndBase().base}${APP_SEGMENT}/${expected}/`;
     for (const [html, options, destination] of [
       [rootHtml, {}, null],
       [rootHtml, { standalone: true }, expectedUrl],
       [rootHtml, { appleStandalone: true }, expectedUrl],
       [appEntryHtml, {}, expectedUrl],
+      [legacyEntryHtml, {}, expectedUrl],
     ]) {
       const actualUrl = resolveEntryFromHtml(html, saved, languages, options).destination;
       if (actualUrl !== destination) {
@@ -242,5 +288,5 @@ export async function validateStaticRoutes(distDirectory = resolve("dist")) {
 const invokedPath = process.argv[1] ? pathToFileURL(resolve(process.argv[1])).href : "";
 if (import.meta.url === invokedPath) {
   await validateStaticRoutes();
-  console.log("Rutas estáticas validadas: landing raíz, entrada de app y app localizada.");
+  console.log("Rutas estáticas validadas: landing raíz, entrada de app, app localizada y redirecciones desde /app/.");
 }

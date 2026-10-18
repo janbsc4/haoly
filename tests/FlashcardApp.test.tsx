@@ -124,7 +124,7 @@ describe("FlashcardApp", () => {
   });
 
   it("opens Léi from the landing link and clears the fragment when returning to cards", async () => {
-    window.history.replaceState(null, "", "/app/es/#conversation");
+    window.history.replaceState(null, "", "/study/es/#conversation");
     try {
       const user = userEvent.setup();
       renderApp([card]);
@@ -1294,7 +1294,7 @@ describe("FlashcardApp localization", () => {
     expect(document.querySelector(".card-prompt h2")).toHaveTextContent(
       promptBeforeSwitch === "hola" ? "hello" : promptBeforeSwitch!,
     );
-    expect(window.location.pathname).toBe("/app/en/");
+    expect(window.location.pathname).toBe("/study/en/");
     expect(document.documentElement.lang).toBe("en");
     expect(window.localStorage.getItem("yuwenke:locale:v1")).toBe("en");
     expect(screen.getByRole("button", { name: "EN" })).toHaveAttribute(
@@ -1311,7 +1311,7 @@ describe("FlashcardApp localization", () => {
     expect(await screen.findByRole("button", { name: "Search" })).toBeInTheDocument();
     expect(screen.queryByRole("searchbox")).not.toBeInTheDocument();
 
-    window.history.pushState(null, "", "/app/es/");
+    window.history.pushState(null, "", "/study/es/");
     fireEvent(window, new Event("popstate"));
 
     expect(
