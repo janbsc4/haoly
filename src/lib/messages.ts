@@ -385,7 +385,7 @@ const es: Messages = {
       {
         platform: "macOS",
         body:
-          "Ajustes del Sistema → Accesibilidad → Contenido hablado → Voz del sistema → Gestionar voces… → Chino (China continental). Ahí puedes descargar las voces mejoradas o premium, más naturales.",
+          "Ajustes del Sistema → Accesibilidad → Lectura y voz. Junto a Voz del sistema, pulsa el botón de información (ⓘ), busca Chino (China continental) y descarga una voz; las mejoradas o premium suenan más naturales. En versiones anteriores, busca Contenido hablado → Voz del sistema → Gestionar voces…. Cuando termine la descarga, vuelve a abrir el navegador y elige la voz en Voz de pronunciación → Voz china.",
       },
       {
         platform: "iPhone / iPad",
@@ -708,7 +708,7 @@ const en: Messages = {
       {
         platform: "macOS",
         body:
-          "System Settings → Accessibility → Spoken Content → System Voice → Manage Voices… → Chinese (China Mainland). You can download Enhanced or Premium voices there, which sound more natural.",
+          "System Settings → Accessibility → Read & Speak. Next to System voice, click the info button (ⓘ), find Chinese (China mainland), and download a voice; Enhanced or Premium voices sound more natural. On older versions, look for Spoken Content → System Voice → Manage Voices… instead. Once the download finishes, restart your browser and select the voice under Pronunciation voice → Chinese voice.",
       },
       {
         platform: "iPhone / iPad",
