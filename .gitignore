@@ -54,3 +54,4 @@ worker/dist/
 .wrangler/
 .dev.vars
 .dev.vars.*
+.claude/launch.json
