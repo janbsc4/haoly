@@ -1,0 +1,355 @@
+---
+// Experimental landing page: a louder, no-nonsense pitch against gamified apps, previewed at
+// /en/ and /es/ before it replaces the bilingual root page. Copy lives here, per locale,
+// because the markup is identical and only the words change.
+import { loadFlashcards } from "../data/loadFlashcards";
+import { loadCardPackData } from "../data/loadCardPacks";
+import { localeUrl } from "../lib/locale";
+import type { Locale } from "../types";
+import { messages } from "../lib/messages";
+import FontPreload from "./FontPreload.astro";
+import "../styles/landing.css";
+import "../styles/landing-loud.css";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const other: Locale = locale === "en" ? "es" : "en";
+const base = import.meta.env.BASE_URL;
+const appUrl = localeUrl(locale);
+const conversationUrl = `${appUrl}#conversation`;
+const cards = loadFlashcards();
+const { packs, packIdByCardId } = loadCardPackData(cards);
+const cardsInPack = (packId: string) => cards.filter((card) => packIdByCardId[card.id] === packId).length;
+const demoCard = cards.find((card) => card.id === "FC002")!;
+const featuredPacks = [packs[0], packs[1], packs[5], packs[9]];
+const t = messages[locale];
+
+const copy = {
+  en: {
+    skip: "Skip to content",
+    sections: "Sections",
+    nav: ["Why not the owl?", "The cards", "Meet Léi"],
+    otherLanguage: "Español",
+    openApp: "Open the app",
+    kicker: ["No streaks", "No gems", "No owl"],
+    title: "Learn Chinese.",
+    titleEm: "Skip the circus.",
+    sub: "No streak to babysit. No hearts to refill. No cartoon bird guilt-tripping you at 11 pm. Just flashcards built from real Mandarin class notes, and Léi, an AI partner who makes you write your own sentences.",
+    start: "Start learning. Free.",
+    chat: "Chat with Léi",
+    reassurance: "No account. No credit card. No notifications. Ever.",
+    previewStatus: "Interactive preview",
+    tabs: ["Study", "Mastered", "Favorites"],
+    steps: ["Picture it", "Say it", "Check"],
+    tryAgain: "Try again",
+    caption: "A real card. No confetti. Try it.",
+    facts: ["words, phrases & concepts", "packs to unlock", "streaks to protect", "guilt-trip notifications"],
+    versusTitle: "Gamified apps optimize for your streak.",
+    versusTitleEm: "We optimize for your Chinese.",
+    versusIntro: "Five hundred days in a row and you still can’t order noodles? That’s not you. That’s the game design. Haoly drops the slot-machine stuff and keeps the part that works: remembering things.",
+    versusLabel: "Gamified apps compared with Haoly",
+    versusHead: "The owl app",
+    // Each row pairs a gamification habit with what Haoly does instead.
+    versus: [
+      ["A streak you’re scared to break", "Come back whenever. Your progress just waits."],
+      ["Hearts, gems, leagues, leaderboards", "Cards. You. Chinese. That’s the whole list."],
+      ["Tap the right bubble out of four", "Recall it cold, then write your own sentence."],
+      ["Push notifications with emotional damage", "Zero notifications. We couldn’t nag you if we tried."],
+      ["A free trial that turns into a subscription", "Free cards, no subscription, no credit card."],
+    ],
+    packsTitle: "Words you’ll actually say.",
+    packsTitleEm: "Not “the bear drinks beer.”",
+    packsIntro: "Every card comes from real Mandarin classes: ordering, family, small talk, the grammar that trips everyone up. Your first pack is already open. Unlock the next when you’re ready, not when an algorithm says so.",
+    packOpen: "Open now",
+    packLocked: "To unlock",
+    cardsUnit: "cards",
+    allPacks: (count: number) => `See all ${count} packs in the app`,
+    methodTitle: "Three things.",
+    methodTitleEm: "Done properly.",
+    methodIntro: "One card at a time. You decide what you know and what needs more work. No XP, no levels, no mascot doing a little dance.",
+    method: [
+      ["Recall, don’t recognize", "Think before you reveal. Practice both directions, and drill the grammar rules themselves with concept cards."],
+      ["Your deck, your call", "Move what you know to Mastered. Star what you keep forgetting. Search and filter when you need one specific card."],
+      ["Hear it. Say it.", "Pinyin on every card, and pronunciation from the Chinese voices on your device. Or study in silence on the bus."],
+    ],
+    leiTitle: "Multiple choice is a crutch.",
+    leiTitleEm: "Léi makes you write.",
+    leiIntro: "Order tea. Talk about your family. Say what you like. Léi, your AI conversation partner, asks in Chinese and you answer with your own sentence, built from the words you’re learning. Get it wrong and you find out why.",
+    leiFeatures: ["Short conversations, on a topic you pick.", "Pinyin, translation, and a possible answer when you’re stuck.", "Honest corrections, explained in plain English."],
+    leiTry: "Try a conversation",
+    leiNote: "Three messages free, no account. Then keep chatting free with Google sign-in, within usage limits. Internet required.",
+    chatPartner: "Conversation partner",
+    chatExample: "Example",
+    chatHelp: "Pinyin & translation",
+    chatQ1: "Do you like drinking tea?",
+    chatYou: "You",
+    chatNeedsWork: "Needs work",
+    chatFix: "Put 喜欢 (xǐhuān — to like) before 喝 (hē — to drink).",
+    chatQ2: "What tea do you like drinking?",
+    chatGrammar: "Grammar question? Ask it. Léi explains in English.",
+    freeTitle: "Free.",
+    freeTitleEm: "Actually free.",
+    freeIntro: "No trial clock, no paywall at lesson six, no “Super” tier. Open the app and start with your first word. Study without an account, star the tricky bits, and come back whenever. Your progress will be waiting. A guilt-trip notification won’t.",
+    faq: [
+      ["Really free?", "Yes. Cards and packs are free, with no subscription. Léi is free too, with usage limits: try three messages without an account, then sign in with Google to continue."],
+      ["Do I need an account?", "Not to study. Your progress, favorites, and open packs are saved on this device. Sign in with Google if you want to sync them across devices."],
+      ["Can I study offline?", "Yes, cards work offline after the app has loaded. Chatting with Léi and signing in need internet."],
+      ["Where are my conversations saved?", "The latest twelve exchanges stay in your browser, separated by account and language. During chat, bounded history and vocabulary are sent to the AI service; transcripts aren’t stored in Firestore or Haoly’s backend."],
+    ],
+    closingTitle: "Your streak doesn’t speak Chinese.",
+    closingTitleEm: "You could.",
+    closingNote: "Learn one word today. Close the app. That counts.",
+    openHaoly: "Open Haoly",
+    createdBy: "Created by",
+    backToTop: "Back to top",
+    noscript: "Enable JavaScript to try the card.",
+  },
+  es: {
+    skip: "Ir al contenido",
+    sections: "Secciones",
+    nav: ["¿Y el búho?", "Las cartas", "Conoce a Léi"],
+    otherLanguage: "English",
+    openApp: "Abrir la app",
+    kicker: ["Sin rachas", "Sin gemas", "Sin búho"],
+    title: "Aprende chino.",
+    titleEm: "Sin circo.",
+    sub: "Sin rachas que cuidar. Sin vidas que recargar. Sin un pájaro de dibujos haciéndote sentir culpable a las 23:00. Solo cartas creadas a partir de apuntes reales de clase de mandarín, y Léi, un compañero con IA que te hace escribir tus propias frases.",
+    start: "Empieza ya. Gratis.",
+    chat: "Conversar con Léi",
+    reassurance: "Sin cuenta. Sin tarjeta. Sin notificaciones. Nunca.",
+    previewStatus: "Ejemplo interactivo",
+    tabs: ["Estudiar", "Dominadas", "Favoritas"],
+    steps: ["Piénsalo", "Dilo", "Comprueba"],
+    tryAgain: "Probar otra vez",
+    caption: "Una carta real. Sin confeti. Pruébala.",
+    facts: ["palabras, frases y conceptos", "packs por desbloquear", "rachas que proteger", "notificaciones culpabilizadoras"],
+    versusTitle: "Las apps con jueguecitos optimizan tu racha.",
+    versusTitleEm: "Nosotros, tu chino.",
+    versusIntro: "¿Quinientos días seguidos y aún no sabes pedir unos fideos? No es culpa tuya. Es el diseño del juego. Haoly se salta la tragaperras y se queda con lo que funciona: recordar.",
+    versusLabel: "Apps con juegos comparadas con Haoly",
+    versusHead: "La app del búho",
+    versus: [
+      ["Una racha que te da miedo perder", "Vuelve cuando quieras. Tu progreso te espera."],
+      ["Vidas, gemas, ligas y clasificaciones", "Cartas. Tú. Chino. Esa es toda la lista."],
+      ["Elegir la burbuja correcta entre cuatro", "Recuérdalo sin pistas y escribe tu propia frase."],
+      ["Notificaciones con daño emocional", "Cero notificaciones. No podríamos darte la lata ni queriendo."],
+      ["Una prueba gratis que acaba en suscripción", "Cartas gratis, sin suscripción, sin tarjeta."],
+    ],
+    packsTitle: "Palabras que sí vas a decir.",
+    packsTitleEm: "No «el oso bebe cerveza».",
+    packsIntro: "Cada carta sale de clases reales de mandarín: pedir algo, la familia, la charla de cortesía, la gramática que atasca a todo el mundo. Tu primer pack ya está abierto. Desbloquea el siguiente cuando te apetezca, no cuando lo diga un algoritmo.",
+    packOpen: "Abierto",
+    packLocked: "Por desbloquear",
+    cardsUnit: "cartas",
+    allPacks: (count: number) => `Ver los ${count} packs en la app`,
+    methodTitle: "Tres cosas.",
+    methodTitleEm: "Bien hechas.",
+    methodIntro: "Una carta cada vez. Tú decides qué sabes y qué necesita más práctica. Sin XP, sin niveles, sin mascota bailando.",
+    method: [
+      ["Recuerda, no reconozcas", "Piensa antes de revelar. Practica en ambos sentidos y repasa las propias reglas gramaticales con cartas de conceptos."],
+      ["Tu mazo, tus reglas", "Pasa a Dominadas lo que ya sabes. Marca con estrella lo que se te olvida. Busca y filtra cuando necesites una carta concreta."],
+      ["Escúchalo. Dilo.", "Pinyin en cada carta y pronunciación con las voces chinas de tu dispositivo. O estudia en silencio en el autobús."],
+    ],
+    leiTitle: "Elegir entre cuatro opciones es una muleta.",
+    leiTitleEm: "Con Léi, escribes tú.",
+    leiIntro: "Pide un té. Habla de tu familia. Cuenta qué te gusta. Léi, tu compañero de conversación con IA, pregunta en chino y tú respondes con tu propia frase, hecha con las palabras que estás aprendiendo. Si te equivocas, sabrás por qué.",
+    leiFeatures: ["Conversaciones cortas, sobre el tema que elijas.", "Pinyin, traducción y una posible respuesta cuando te atasques.", "Correcciones sinceras, explicadas en español."],
+    leiTry: "Prueba una conversación",
+    leiNote: "Prueba tres mensajes sin cuenta. Después, sigue gratis con Google, dentro de los límites de uso. Necesitas conexión.",
+    chatPartner: "Compañero de conversación",
+    chatExample: "Ejemplo",
+    chatHelp: "Pinyin y traducción",
+    chatQ1: "¿Te gusta beber té?",
+    chatYou: "Tú",
+    chatNeedsWork: "A mejorar",
+    chatFix: "Coloca 喜欢 (xǐhuān — gustar) antes de 喝 (hē — beber).",
+    chatQ2: "¿Qué té te gusta beber?",
+    chatGrammar: "¿Una duda de gramática? Pregúntala. Léi te la explica en español.",
+    freeTitle: "Gratis.",
+    freeTitleEm: "Gratis de verdad.",
+    freeIntro: "Sin cuenta atrás de prueba, sin muro de pago en la lección seis, sin plan «Super». Abre la app y empieza con tu primera palabra. Estudia sin cuenta, marca lo que te cuesta y vuelve cuando quieras. Tu progreso te espera; una notificación culpabilizadora, no.",
+    faq: [
+      ["¿De verdad es gratis?", "Sí. Las cartas y los packs son gratis, sin suscripción. Léi también es gratis, con límites de uso: prueba tres mensajes sin cuenta e inicia sesión con Google para continuar."],
+      ["¿Necesito una cuenta?", "No para estudiar. Tu progreso, favoritas y packs abiertos se guardan en este dispositivo. Inicia sesión con Google si quieres sincronizarlos entre dispositivos."],
+      ["¿Puedo estudiar sin conexión?", "Sí, las cartas funcionan sin conexión después de cargar la app. Conversar con Léi e iniciar sesión necesitan internet."],
+      ["¿Dónde se guardan mis conversaciones?", "Los últimos doce intercambios se guardan en tu navegador, separados por cuenta e idioma. Al conversar, se envían un historial limitado y vocabulario al servicio de IA; no se guardan transcripciones en Firestore ni en el backend de Haoly."],
+    ],
+    closingTitle: "Tu racha no habla chino.",
+    closingTitleEm: "Tú podrías.",
+    closingNote: "Aprende una palabra hoy. Cierra la app. Eso cuenta.",
+    openHaoly: "Abrir Haoly",
+    createdBy: "Creado por",
+    backToTop: "Volver arriba",
+    noscript: "Activa JavaScript para probar la carta.",
+  },
+}[locale];
+
+const methodMarks = [
+  { mark: "忆", hanzi: true },
+  { mark: "☆", hanzi: false },
+  { mark: "听", hanzi: true },
+];
+---
+
+<!doctype html>
+<html lang={locale} data-lang={locale}>
+  <head>
+    <meta charset="UTF-8" />
+    <FontPreload />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content={t.metadata.description} />
+    <meta name="robots" content="noindex" />
+    <meta name="theme-color" content="#f6f2ea" />
+    <link rel="icon" href={`${base}favicon.ico`} sizes="16x16 32x32 48x48" />
+    <link rel="icon" href={`${base}favicon-32.png`} type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href={`${base}apple-touch-icon.png`} sizes="180x180" />
+    <title>Haoly · 好礼</title>
+    <script is:inline data-install-suppression>
+      window.addEventListener("beforeinstallprompt", (event) => event.preventDefault());
+    </script>
+    <script>
+      import { initLandingPage } from "../lib/landing";
+      initLandingPage();
+    </script>
+  </head>
+  <body class="lx">
+    <a class="lp-skip" href="#main">{copy.skip}</a>
+    <header class="lp-header lp-shell">
+      <a class="lp-brand" href={base} aria-label="Haoly">
+        <img src={`${base}haoly-mark.png`} alt="" width="40" height="40" />
+        <span>Haoly <small lang="zh-Hans">好礼</small></span>
+      </a>
+      <nav class="lp-nav" aria-label={copy.sections}>
+        <a href="#versus">{copy.nav[0]}</a>
+        <a href="#packs">{copy.nav[1]}</a>
+        <a href="#lei">{copy.nav[2]}</a>
+      </nav>
+      <div class="lp-header-tools">
+        <a class="lx-lang" href={`${base}${other}/`} hreflang={other} lang={other}>{other.toUpperCase()}<span class="sr-only"> · {copy.otherLanguage}</span></a>
+        <a class="lp-button lp-button-small lp-button-ink" href={appUrl}>{copy.openApp} <span aria-hidden="true">↗</span></a>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="lp-hero lp-shell" aria-labelledby="hero-title">
+        <div class="lp-hero-copy">
+          <p class="lx-kicker">{copy.kicker.map((item) => <span>{item}</span>)}</p>
+          <h1 id="hero-title">{copy.title}<br /><em>{copy.titleEm}</em></h1>
+          <p class="lp-hero-sub">{copy.sub}</p>
+          <div class="lp-actions">
+            <a class="lp-button lp-button-primary" href={appUrl}>{copy.start} <span aria-hidden="true">→</span></a>
+            <a class="lp-text-link" href={conversationUrl}>{copy.chat} <span aria-hidden="true">↗</span></a>
+          </div>
+          <p class="lp-reassurance"><span aria-hidden="true">✓</span> {copy.reassurance}</p>
+        </div>
+        <div class="lp-preview-stage">
+          <div class="lp-preview-grid" aria-hidden="true"></div>
+          <div class="lp-preview">
+            <div class="lp-preview-header"><span class="lp-preview-brand">Haoly</span><span class="lp-preview-status"><span class="lp-dot" aria-hidden="true"></span>{copy.previewStatus}</span></div>
+            <div class="lp-preview-tabs" aria-hidden="true">{copy.tabs.map((tab, index) => <span class={index === 0 ? "is-active" : undefined}>{tab}</span>)}</div>
+            <div class="lp-demo-meta"><span>{t.directions.toHanzi}</span><span>{demoCard.id}</span></div>
+            <article class="lp-demo-card">
+              <p class="lp-demo-label">{t.card.promptEyebrow}</p>
+              <p class="lp-demo-prompt">{locale === "en" ? demoCard.ingles : demoCard.espanol}</p>
+              <div class="lp-demo-placeholder" data-demo-placeholder><span class="lp-demo-cell lp-hanzi" lang="zh-Hans" aria-hidden="true"><span class="lp-demo-veil">{demoCard.hanzi}</span></span><ol class="lp-demo-steps">{copy.steps.map((step) => <li>{step}</li>)}</ol></div>
+              <div class="lp-demo-answer" id="demo-answer" hidden aria-live="polite">
+                <p class="lp-demo-cell lp-hanzi" lang="zh-Hans">{demoCard.hanzi}</p>
+                <p class="lp-demo-pinyin" lang="zh-Latn">{demoCard.pinyin}</p>
+                <p class="lp-demo-explanation">{locale === "en" ? demoCard.explicacion_ingles : demoCard.explicacion}</p>
+                <div class="lp-demo-example"><p class="lp-hanzi" lang="zh-Hans">{demoCard.ejemplo_hanzi}</p><p lang="zh-Latn">{demoCard.ejemplo_pinyin}</p><p>{locale === "en" ? demoCard.ejemplo_ingles : demoCard.ejemplo_espanol}</p></div>
+              </div>
+              <button class="lp-demo-reveal" type="button" data-demo-reveal disabled aria-expanded="false" aria-controls="demo-answer">
+                <span data-reveal-label>{t.session.reveal}</span>
+                <span data-reset-label hidden>{copy.tryAgain}</span>
+                <span aria-hidden="true">↻</span>
+              </button>
+            </article>
+          </div>
+          <p class="lp-preview-caption"><span class="lp-caption-line" aria-hidden="true"></span>{copy.caption}</p>
+        </div>
+      </section>
+
+      <div class="lp-facts lp-shell">
+        {[cards.length, packs.length, 0, 0].map((value, index) => <p><strong>{value}</strong><span>{copy.facts[index]}</span></p>)}
+      </div>
+
+      <section class="lx-versus lp-shell lp-section" id="versus" aria-labelledby="versus-title">
+        <div class="lp-section-heading">
+          <div><h2 id="versus-title">{copy.versusTitle}<br /><em>{copy.versusTitleEm}</em></h2></div>
+          <p class="lp-section-intro">{copy.versusIntro}</p>
+        </div>
+        <div class="lx-versus-table" role="table" aria-label={copy.versusLabel}>
+          <div class="lx-versus-row lx-versus-head" role="row"><span role="columnheader">{copy.versusHead}</span><span role="columnheader">Haoly</span></div>
+          {copy.versus.map(([them, us]) => (
+            <div class="lx-versus-row" role="row"><span role="cell"><s>{them}</s></span><span role="cell">{us}</span></div>
+          ))}
+        </div>
+      </section>
+
+      <section class="lp-packs lp-shell lp-section" id="packs" aria-labelledby="packs-title">
+        <div class="lp-section-heading">
+          <div><h2 id="packs-title">{copy.packsTitle}<br /><em>{copy.packsTitleEm}</em></h2></div>
+          <p class="lp-section-intro">{copy.packsIntro}</p>
+        </div>
+        <div class="lp-pack-grid">
+          {featuredPacks.map((pack, index) => (
+            <article class="lp-pack" data-theme={pack.theme}>
+              <div class="lp-pack-top"><span class="lp-pack-number">{String(packs.indexOf(pack) + 1).padStart(2, "0")}</span><span class="lp-pack-state">{index === 0 ? copy.packOpen : copy.packLocked}</span></div>
+              <span class="lp-pack-mark lp-hanzi" lang="zh-Hans">{pack.mark}</span>
+              <h3>{pack.title[locale]}</h3>
+              <p>{pack.description[locale]}</p>
+              <div class="lp-pack-bottom"><span>{cardsInPack(pack.id)} {copy.cardsUnit}</span><span lang="zh-Hans" aria-hidden="true">好礼</span></div>
+            </article>
+          ))}
+        </div>
+        <p class="lp-pack-link"><a class="lp-text-link" href={appUrl}>{copy.allPacks(packs.length)} <span aria-hidden="true">→</span></a></p>
+      </section>
+
+      <section class="lp-method lp-shell lp-section" aria-labelledby="method-title">
+        <div class="lp-section-heading"><div><h2 id="method-title">{copy.methodTitle}<br /><em>{copy.methodTitleEm}</em></h2></div><p class="lp-section-intro">{copy.methodIntro}</p></div>
+        <div class="lp-method-grid">
+          {copy.method.map(([heading, body], index) => (
+            <article><span class:list={["lp-feature-mark", { "lp-hanzi": methodMarks[index].hanzi }]} lang={methodMarks[index].hanzi ? "zh-Hans" : undefined} aria-hidden="true">{methodMarks[index].mark}</span><h3>{heading}</h3><p>{body}</p></article>
+          ))}
+        </div>
+      </section>
+
+      <section class="lp-lei" id="lei" aria-labelledby="lei-title">
+        <div class="lp-shell lp-lei-inner">
+          <div class="lp-lei-copy">
+            <h2 id="lei-title">{copy.leiTitle}<br /><em>{copy.leiTitleEm}</em></h2>
+            <p>{copy.leiIntro}</p>
+            <ul class="lp-lei-features">
+              {copy.leiFeatures.map((feature) => <li><span aria-hidden="true">↳</span><span>{feature}</span></li>)}
+            </ul>
+            <a class="lp-button lp-button-light" href={conversationUrl}>{copy.leiTry} <span aria-hidden="true">↗</span></a>
+            <p class="lp-lei-note">{copy.leiNote}</p>
+          </div>
+          <figure class="lp-chat-example">
+            <figcaption><span class="lp-chat-seal lp-hanzi" lang="zh-Hans" aria-hidden="true">雷</span><span><strong>Léi</strong><small>{copy.chatPartner}</small></span><span class="lp-example-label">{copy.chatExample}</span></figcaption>
+            <div class="lp-chat-line"><span class="lp-speaker">Léi</span><p class="lp-hanzi" lang="zh-Hans">你喜欢喝茶吗？</p><details class="lp-chat-help"><summary>{copy.chatHelp}</summary><p class="lp-ruby lp-hanzi" lang="zh-Hans"><ruby>你<rt>nǐ</rt></ruby><ruby>喜<rt>xǐ</rt></ruby><ruby>欢<rt>huān</rt></ruby><ruby>喝<rt>hē</rt></ruby><ruby>茶<rt>chá</rt></ruby><ruby>吗<rt>ma</rt></ruby>？</p><p>{copy.chatQ1}</p></details></div>
+            <div class="lp-chat-answer"><span class="lp-speaker">{copy.chatYou}</span><p class="lp-hanzi" lang="zh-Hans">我喝喜欢茶。</p><details class="lp-naturalness"><summary>{copy.chatNeedsWork}<span aria-hidden="true">⌄</span></summary><p>{copy.chatFix}</p><p class="lp-hanzi" lang="zh-Hans">我喜欢喝茶。</p></details></div>
+            <div class="lp-chat-line"><span class="lp-speaker">Léi</span><p class="lp-hanzi" lang="zh-Hans">你喜欢喝什么茶？</p><p class="lp-chat-translation">{copy.chatQ2}</p></div>
+            <div class="lp-chat-question"><span aria-hidden="true">?</span><p>{copy.chatGrammar}</p></div>
+          </figure>
+        </div>
+      </section>
+
+      <section class="lp-practical lp-shell lp-section" aria-labelledby="practical-title">
+        <div><h2 id="practical-title">{copy.freeTitle}<br /><em>{copy.freeTitleEm}</em></h2><p class="lp-practical-benefit">{copy.freeIntro}</p></div>
+        <div class="lp-faq">
+          {copy.faq.map(([question, answer], index) => (
+            <details open={index === 1}><summary>{question}<span aria-hidden="true">+</span></summary><p>{answer}</p></details>
+          ))}
+        </div>
+      </section>
+
+      <section class="lp-closing lp-shell" aria-labelledby="closing-title"><span class="lp-closing-mark lp-hanzi" lang="zh-Hans" aria-hidden="true">学</span><div><h2 id="closing-title">{copy.closingTitle}<br /><em>{copy.closingTitleEm}</em></h2><p class="lp-closing-note">{copy.closingNote}</p></div><a class="lp-button lp-button-primary" href={appUrl}>{copy.openHaoly} <span aria-hidden="true">→</span></a></section>
+    </main>
+    <footer class="lp-footer lp-shell"><a class="lp-brand" href={base}>Haoly <small lang="zh-Hans">好礼</small></a><p>{copy.createdBy} <a href="https://janbalanya.com/">Jan Balanyà Scholl</a></p><a href="#main">{copy.backToTop} ↑</a></footer>
+    <noscript><p class="lp-noscript">{copy.noscript} <a href={appUrl}>{copy.openApp}</a></p></noscript>
+  </body>
+</html>

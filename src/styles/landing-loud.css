@@ -1,4 +1,4 @@
-/* Experimental /en/ landing: landing.css turned up. Same paper, logo and font; heavier type,
+/* Experimental /en/ and /es/ landing: landing.css turned up. Same paper, logo and font; heavier type,
    ink outlines with hard offset shadows, and a cinnabar strike for everything we leave out. */
 .lx {
   --lx-line: 2px solid var(--ink);
@@ -103,3 +103,12 @@
 @media (prefers-reduced-motion: reduce) {
   .lx .lp-button:hover, .lx .lp-pack:hover { transform: none; }
 }
+
+/* Inline, not inline-flex: the text and its arrow share one line box, so the underline
+   runs unbroken through the space between them. */
+.lx .lp-text-link { display: inline-block; padding-block: 10px; }
+
+/* The other locale is one plain link: these preview pages are single-language. */
+.lx-lang { display: grid; place-items: center; min-width: 44px; min-height: 42px; border: var(--lx-line); border-radius: 999px; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em; text-decoration: none; }
+.lx-lang:hover { background: var(--surface); }
+.lx .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
