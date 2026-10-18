@@ -398,7 +398,9 @@ export default function FlashcardApp({
   ]);
 
   useEffect(() => {
-    if (revealed) answerRef.current?.focus();
+    // Focus moves screen readers to the answer; preventScroll stops the page from
+    // jumping while the prompt is still compacting above it.
+    if (revealed) answerRef.current?.focus({ preventScroll: true });
   }, [revealed]);
 
   useEffect(() => {
