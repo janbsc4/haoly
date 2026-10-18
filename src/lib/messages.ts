@@ -178,7 +178,7 @@ export interface Messages {
     trigger: string;
     title: string;
     closeAria: string;
-    steps: Record<StudyView | "packs", HelpStep>;
+    steps: Record<StudyView | "packs" | "converse", HelpStep>;
     detailsFlow: string;
     properNames: { before: string; highlight: string; after: string };
     detailsAccount: string;
@@ -448,7 +448,7 @@ const es: Messages = {
       study: {
         title: "Estudiar",
         body:
-          "Practica cartas nuevas de tus packs abiertos junto con las que estás aprendiendo. Revela la respuesta y pulsa Continuar para seguir practicando o Pasar a Dominadas si ya la sabes. También puedes saltarla por ahora.",
+          "Practica cartas nuevas de tus packs abiertos junto con las que estás aprendiendo. Revela la respuesta y pulsa Continuar para seguir practicando o Pasar a Dominadas si ya la sabes. También puedes saltarla por ahora. Con teclado: Espacio revela y continúa, 2 pasa la carta, 3 la salta y / abre la búsqueda.",
       },
       mastered: {
         title: "Dominadas",
@@ -458,12 +458,17 @@ const es: Messages = {
       favorites: {
         title: "Favoritas",
         body:
-          "Marca una carta con la estrella para tener sus cartas siempre disponibles en una cola personal. Añadirla a Favoritas no la quita de Estudiar ni de Dominadas. Continuar no la mueve entre Estudiar y Dominadas; el otro botón sí, sin quitarla de Favoritas.",
+          "Marca una carta con la estrella para tenerla siempre a mano en una cola personal. Añadirla a Favoritas no la quita de Estudiar ni de Dominadas. Continuar no la mueve entre Estudiar y Dominadas; el otro botón sí, sin quitarla de Favoritas.",
       },
       packs: {
         title: "Packs",
         body:
           "Abre cualquier colección cuando quieras para añadir material nuevo a Estudiar. Los packs abiertos permanecen disponibles.",
+      },
+      converse: {
+        title: "Conversa",
+        body:
+          "Elige un tema y Léi, tu compañero de conversación con IA, te pregunta en chino. Responde con tu propia frase usando las palabras que estás aprendiendo; si te equivocas, te explica por qué. Prueba tres mensajes sin cuenta y luego inicia sesión con Google para seguir, con límites de uso. Necesita internet.",
       },
     },
     detailsFlow:
@@ -761,7 +766,7 @@ const en: Messages = {
       study: {
         title: "Study",
         body:
-          "Practice new cards from your open packs alongside cards you are learning. Reveal the answer, then choose Continue to keep practicing or Move to Mastered if you know it. You can also skip it for now.",
+          "Practice new cards from your open packs alongside cards you are learning. Reveal the answer, then choose Continue to keep practicing or Move to Mastered if you know it. You can also skip it for now. On a keyboard: Space reveals and continues, 2 moves the card, 3 skips it, and / opens search.",
       },
       mastered: {
         title: "Mastered",
@@ -771,12 +776,17 @@ const en: Messages = {
       favorites: {
         title: "Favorites",
         body:
-          "Mark a card with the star to keep its cards always available in a personal queue. Adding it to Favorites does not remove it from Study or Mastered. Continue does not move it between Study and Mastered; the other button does, without removing it from Favorites.",
+          "Mark a card with the star to keep it at hand in a personal queue. Adding it to Favorites does not remove it from Study or Mastered. Continue does not move it between Study and Mastered; the other button does, without removing it from Favorites.",
       },
       packs: {
         title: "Packs",
         body:
           "Open any collection whenever you want to add new material to Study. Opened packs stay available.",
+      },
+      converse: {
+        title: "Converse",
+        body:
+          "Pick a topic and Léi, your AI conversation partner, asks in Chinese. Answer with your own sentence using the words you are learning; if you get it wrong, Léi explains why. Try three messages without an account, then sign in with Google to keep going, within usage limits. Internet required.",
       },
     },
     detailsFlow:
