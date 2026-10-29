@@ -786,6 +786,38 @@ select {
   flex: none;
 }
 
+.card-picture {
+  flex: none;
+  width: 88px;
+  height: 88px;
+  margin-left: auto;
+  fill: none;
+  stroke: var(--ink);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.5;
+}
+
+.card-picture .pic-soft { fill: var(--amber-soft); }
+.card-picture .pic-paper { fill: var(--surface); }
+.card-picture .pic-bg { fill: var(--paper); }
+.card-picture .pic-red { fill: var(--cinnabar); }
+.card-picture .pic-amber { fill: var(--amber); }
+.card-picture .pic-jade-soft { fill: var(--jade-soft); }
+.card-picture .pic-gold { fill: var(--picture-gold); }
+.card-picture .pic-orange { fill: var(--picture-orange); }
+.card-picture .pic-blue { fill: var(--picture-blue); }
+.card-picture .pic-blue-soft { fill: var(--picture-blue-soft); }
+.card-picture .pic-ink { fill: var(--ink); }
+.card-picture .pic-flat { stroke: none; }
+.card-picture .pic-thin { stroke: var(--muted); stroke-width: 1.8; }
+.card-picture .pic-thick { stroke-width: 3.5; }
+.card-picture .pic-dash { stroke-dasharray: 2 5; }
+.card-picture .pic-accent { stroke: var(--cinnabar); }
+.card-picture .pic-water { stroke: var(--picture-blue); }
+.card-picture .pic-jade { stroke: var(--jade); stroke-width: 3.5; }
+.card-picture .pic-gold-line { stroke: var(--picture-gold); stroke-width: 3; }
+
 .answer-spanish,
 .answer-hanzi {
   min-width: 0;

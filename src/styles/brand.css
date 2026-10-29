@@ -38,6 +38,11 @@
   --proper-name: #75428f;
   --proper-name-soft: #eee3f4;
   --assessment-needs-work: #ffd4d5;
+  /* Card pictures only: flags, water and food need hues the interface palette lacks. */
+  --picture-blue: #2f5a8c;
+  --picture-blue-soft: #dfe8f1;
+  --picture-gold: #e2b23a;
+  --picture-orange: #e48a2e;
   --focus: var(--jade);
   --shadow: 0 6px 24px rgba(60, 40, 10, 0.045);
   --font-ui: "Hanken Grotesk", ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;

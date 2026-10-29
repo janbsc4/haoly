@@ -1,4 +1,5 @@
 import { AppIcon } from "./AppIcon";
+import { CardPicture, loadCardPictures } from "./CardPicture";
 import { Fragment, forwardRef, useEffect, type RefObject } from "react";
 
 import type { Locale, StudyUnit } from "../types";
@@ -61,6 +62,11 @@ export const StudyCard = forwardRef<HTMLElement, StudyCardProps>(function StudyC
     : hanziPrompt
       ? content.meaning
       : card.hanzi;
+
+  // Fetch the drawings while the learner reads the prompt so the answer shows them at once.
+  useEffect(() => {
+    loadCardPictures().catch(() => undefined);
+  }, []);
 
   useEffect(() => {
     if (revealed && !conceptCard && !muted) speakChinese(card.hanzi);
@@ -131,6 +137,8 @@ export const StudyCard = forwardRef<HTMLElement, StudyCardProps>(function StudyC
                 <AppIcon name="sound" />
               </button>
             ) : null}
+
+            <CardPicture cardId={card.id} />
           </div>
 
           {!conceptCard ? (
